@@ -1,0 +1,14 @@
+{
+  "lenguaje": "Python",
+  "implementacion": "CPython",
+  "version": "3.9.6 (default, Apr  7 2026, 02:38:40) \n[Clang 21.0.0 (clang-2100.0.123.102)]",
+  "plataforma": "macOS-26.6.2-arm64-arm-64bit",
+  "procesador": "arm",
+  "limite_recursion": 1000,
+  "reloj": "time.perf_counter_ns()",
+  "gc": "gc.collect() antes y gc.disable() durante cada medición (como timeit)",
+  "repeticiones": 5,
+  "limite_s": 300,
+  "inicio_utc": "2026-10-15T22:59:48+00:00",
+  "fin_utc": "2026-10-15T23:33:43+00:00"
+}

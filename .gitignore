@@ -1,0 +1,10 @@
+java/out/
+__pycache__/
+*.pyc
+.DS_Store
+.idea/
+.vscode/
+.venv/
+
+# corridas de prueba rápidas (no van al informe)
+results/prueba_*.csv

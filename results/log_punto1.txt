@@ -1,0 +1,171 @@
+== 1. Datos de prueba (solo se generan si no existen) ==
+Los datos ya existen en /Users/santiagopolaniapinzon/Downloads/taller3/data (12 archivos).
+Los datos se generan UNA sola vez. Usa --force solo si de verdad quieres regenerarlos.
+== 2. Compilación Java ==
+== 3. Pruebas de corrección ==
+OK: 54 pruebas superadas (6 algoritmos x 9 casos)
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.175s
+
+OK
+== 4. Benchmark Java (compilado) ==
+[Java] OpenJDK 64-Bit Server VM 21.0.9 | reps=5 | límite=300 s | salida: results/ordenamiento_java.csv
+[Java] Calentamiento global: 10 rondas x 6 algoritmos, n=10,000 aleatoria...
+  n=    1,000  InsertionSort       aleatoria           47.4 µs ± 1.7 µs  medido
+  n=    1,000  InsertionSort       ascendente           1.2 µs ± 0.2 µs  medido
+  n=    1,000  InsertionSort       descendente         85.0 µs ± 2.4 µs  medido
+  n=    1,000  DualPivotQuickSort  aleatoria           17.4 µs ± 4.3 µs  medido
+  n=    1,000  DualPivotQuickSort  ascendente        157.8 µs ± 14.9 µs  medido
+  n=    1,000  DualPivotQuickSort  descendente       149.0 µs ± 14.4 µs  medido
+  n=    1,000  MergeSort           aleatoria           32.1 µs ± 7.9 µs  medido
+  n=    1,000  MergeSort           ascendente          18.0 µs ± 0.7 µs  medido
+  n=    1,000  MergeSort           descendente         16.9 µs ± 1.5 µs  medido
+  n=    1,000  HeapSort            aleatoria           30.5 µs ± 7.2 µs  medido
+  n=    1,000  HeapSort            ascendente          24.5 µs ± 4.6 µs  medido
+  n=    1,000  HeapSort            descendente         19.1 µs ± 4.1 µs  medido
+  n=    1,000  RadixSort           aleatoria           22.6 µs ± 0.4 µs  medido
+  n=    1,000  RadixSort           ascendente          21.7 µs ± 2.0 µs  medido
+  n=    1,000  RadixSort           descendente         21.8 µs ± 0.9 µs  medido
+  n=    1,000  BucketSort          aleatoria           17.2 µs ± 2.6 µs  medido
+  n=    1,000  BucketSort          ascendente          16.3 µs ± 2.2 µs  medido
+  n=    1,000  BucketSort          descendente         18.4 µs ± 4.9 µs  medido
+  n=   10,000  InsertionSort       aleatoria         3.26 ms ± 125.1 µs  medido
+  n=   10,000  InsertionSort       ascendente           6.4 µs ± 0.1 µs  medido
+  n=   10,000  InsertionSort       descendente        6.57 ms ± 63.8 µs  medido
+  n=   10,000  DualPivotQuickSort  aleatoria         238.1 µs ± 32.8 µs  medido
+  n=   10,000  DualPivotQuickSort  ascendente        13.68 ms ± 37.0 µs  medido
+  n=   10,000  DualPivotQuickSort  descendente      13.30 ms ± 481.9 µs  medido
+  n=   10,000  MergeSort           aleatoria         430.5 µs ± 30.8 µs  medido
+  n=   10,000  MergeSort           ascendente         158.3 µs ± 8.9 µs  medido
+  n=   10,000  MergeSort           descendente        150.6 µs ± 6.4 µs  medido
+  n=   10,000  HeapSort            aleatoria         433.8 µs ± 33.0 µs  medido
+  n=   10,000  HeapSort            ascendente         317.5 µs ± 7.7 µs  medido
+  n=   10,000  HeapSort            descendente       331.1 µs ± 13.2 µs  medido
+  n=   10,000  RadixSort           aleatoria         163.6 µs ± 11.3 µs  medido
+  n=   10,000  RadixSort           ascendente         161.9 µs ± 7.9 µs  medido
+  n=   10,000  RadixSort           descendente       167.5 µs ± 16.5 µs  medido
+  n=   10,000  BucketSort          aleatoria         168.8 µs ± 11.5 µs  medido
+  n=   10,000  BucketSort          ascendente         149.3 µs ± 9.6 µs  medido
+  n=   10,000  BucketSort          descendente       153.5 µs ± 16.8 µs  medido
+  n=  100,000  InsertionSort       aleatoria       327.00 ms ± 971.2 µs  medido
+  n=  100,000  InsertionSort       ascendente          52.7 µs ± 3.7 µs  medido
+  n=  100,000  InsertionSort       descendente      645.17 ms ± 5.60 ms  medido
+  n=  100,000  DualPivotQuickSort  aleatoria          3.80 ms ± 63.4 µs  medido
+  n=  100,000  DualPivotQuickSort  ascendente                   ~1.37 s  estimado  [StackOverflowError: pila del hilo agotada (recursión de profundidad ~n/2)]
+  n=  100,000  DualPivotQuickSort  descendente                  ~1.33 s  estimado  [StackOverflowError: pila del hilo agotada (recursión de profundidad ~n/2)]
+  n=  100,000  MergeSort           aleatoria          5.45 ms ± 45.1 µs  medido
+  n=  100,000  MergeSort           ascendente         1.56 ms ± 23.7 µs  medido
+  n=  100,000  MergeSort           descendente        1.50 ms ± 24.1 µs  medido
+  n=  100,000  HeapSort            aleatoria          5.75 ms ± 73.1 µs  medido
+  n=  100,000  HeapSort            ascendente         3.15 ms ± 32.5 µs  medido
+  n=  100,000  HeapSort            descendente        3.39 ms ± 12.0 µs  medido
+  n=  100,000  RadixSort           aleatoria          1.51 ms ± 14.8 µs  medido
+  n=  100,000  RadixSort           ascendente         1.54 ms ± 12.8 µs  medido
+  n=  100,000  RadixSort           descendente        1.52 ms ± 15.1 µs  medido
+  n=  100,000  BucketSort          aleatoria          2.46 ms ± 74.5 µs  medido
+  n=  100,000  BucketSort          ascendente         1.61 ms ± 15.2 µs  medido
+  n=  100,000  BucketSort          descendente        1.70 ms ± 26.8 µs  medido
+  n=1,000,000  InsertionSort       aleatoria         33.74 s ± 51.59 ms  medido
+  n=1,000,000  InsertionSort       ascendente        499.4 µs ± 34.1 µs  medido
+  n=1,000,000  InsertionSort       descendente      65.88 s ± 184.49 ms  medido  [sin calentamiento por caso (predicción > 60 s; JIT ya caliente)]
+  n=1,000,000  DualPivotQuickSort  aleatoria        48.95 ms ± 174.6 µs  medido
+  n=1,000,000  DualPivotQuickSort  ascendente                  ~2.3 min  estimado  [no ejecutado: falló con StackOverflowError en n=100000 y la profundidad de recursión crece con n]
+  n=1,000,000  DualPivotQuickSort  descendente                 ~2.2 min  estimado  [no ejecutado: falló con StackOverflowError en n=100000 y la profundidad de recursión crece con n]
+  n=1,000,000  MergeSort           aleatoria        69.59 ms ± 207.6 µs  medido
+  n=1,000,000  MergeSort           ascendente       19.06 ms ± 261.4 µs  medido
+  n=1,000,000  MergeSort           descendente       18.07 ms ± 95.8 µs  medido
+  n=1,000,000  HeapSort            aleatoria        77.06 ms ± 617.2 µs  medido
+  n=1,000,000  HeapSort            ascendente        37.87 ms ± 41.6 µs  medido
+  n=1,000,000  HeapSort            descendente      39.64 ms ± 114.7 µs  medido
+  n=1,000,000  RadixSort           aleatoria         16.09 ms ± 79.9 µs  medido
+  n=1,000,000  RadixSort           ascendente        16.24 ms ± 54.1 µs  medido
+  n=1,000,000  RadixSort           descendente       16.10 ms ± 79.2 µs  medido
+  n=1,000,000  BucketSort          aleatoria         76.86 ms ± 1.23 ms  medido
+  n=1,000,000  BucketSort          ascendente       22.44 ms ± 326.2 µs  medido
+  n=1,000,000  BucketSort          descendente      23.69 ms ± 552.5 µs  medido
+Listo.
+== 5. Benchmark Python (interpretado) ==
+[Python] 3.9.6 | reps=5 | límite=300 s | salida: /Users/santiagopolaniapinzon/Downloads/taller3/results/ordenamiento_python.csv
+  n=    1,000  InsertionSort       aleatoria        10.88 ms ± 266.0 µs  medido
+  n=    1,000  InsertionSort       ascendente          53.4 µs ± 0.3 µs  medido
+  n=    1,000  InsertionSort       descendente      21.66 ms ± 357.8 µs  medido
+  n=    1,000  DualPivotQuickSort  aleatoria          521.3 µs ± 6.7 µs  medido
+  n=    1,000  DualPivotQuickSort  ascendente        9.69 ms ± 123.0 µs  medido
+  n=    1,000  DualPivotQuickSort  descendente       9.74 ms ± 146.0 µs  medido
+  n=    1,000  MergeSort           aleatoria          1.36 ms ± 61.3 µs  medido
+  n=    1,000  MergeSort           ascendente         1.18 ms ± 27.8 µs  medido
+  n=    1,000  MergeSort           descendente        1.21 ms ± 87.0 µs  medido
+  n=    1,000  HeapSort            aleatoria          1.38 ms ± 46.7 µs  medido
+  n=    1,000  HeapSort            ascendente        1.78 ms ± 477.1 µs  medido
+  n=    1,000  HeapSort            descendente       2.77 ms ± 663.3 µs  medido
+  n=    1,000  RadixSort           aleatoria         1.60 ms ± 703.2 µs  medido
+  n=    1,000  RadixSort           ascendente          1.10 ms ± 7.7 µs  medido
+  n=    1,000  RadixSort           descendente        1.14 ms ± 52.9 µs  medido
+  n=    1,000  BucketSort          aleatoria         281.5 µs ± 12.7 µs  medido
+  n=    1,000  BucketSort          ascendente        274.6 µs ± 11.4 µs  medido
+  n=    1,000  BucketSort          descendente        285.7 µs ± 1.9 µs  medido
+  n=   10,000  InsertionSort       aleatoria          1.18 s ± 14.70 ms  medido
+  n=   10,000  InsertionSort       ascendente        678.1 µs ± 19.7 µs  medido
+  n=   10,000  InsertionSort       descendente        2.39 s ± 45.83 ms  medido
+  n=   10,000  DualPivotQuickSort  aleatoria         6.75 ms ± 100.7 µs  medido
+  n=   10,000  DualPivotQuickSort  ascendente                ~969.02 ms  estimado  [RecursionError en la repetición 1 (sys.getrecursionlimit() = 1000)]
+  n=   10,000  DualPivotQuickSort  descendente               ~974.39 ms  estimado  [RecursionError en la repetición 1 (sys.getrecursionlimit() = 1000)]
+  n=   10,000  MergeSort           aleatoria        17.12 ms ± 366.0 µs  medido
+  n=   10,000  MergeSort           ascendente       15.01 ms ± 411.9 µs  medido
+  n=   10,000  MergeSort           descendente      15.20 ms ± 308.1 µs  medido
+  n=   10,000  HeapSort            aleatoria        20.34 ms ± 462.1 µs  medido
+  n=   10,000  HeapSort            ascendente       21.67 ms ± 689.1 µs  medido
+  n=   10,000  HeapSort            descendente      19.24 ms ± 563.6 µs  medido
+  n=   10,000  RadixSort           aleatoria        12.26 ms ± 457.5 µs  medido
+  n=   10,000  RadixSort           ascendente       12.19 ms ± 262.0 µs  medido
+  n=   10,000  RadixSort           descendente      12.16 ms ± 449.3 µs  medido
+  n=   10,000  BucketSort          aleatoria         2.95 ms ± 125.9 µs  medido
+  n=   10,000  BucketSort          ascendente         2.87 ms ± 97.9 µs  medido
+  n=   10,000  BucketSort          descendente       3.04 ms ± 158.2 µs  medido
+  n=  100,000  InsertionSort       aleatoria           2.1 min ± 5.24 s  medido
+  n=  100,000  InsertionSort       ascendente        6.13 ms ± 342.7 µs  medido
+  n=  100,000  InsertionSort       descendente         4.2 min ± 8.53 s  medido
+  n=  100,000  DualPivotQuickSort  aleatoria         83.97 ms ± 1.48 ms  medido
+  n=  100,000  DualPivotQuickSort  ascendente                  ~96.90 s  estimado  [no ejecutado: falló con RecursionError en n=10000 y la profundidad de recursión crece con n]
+  n=  100,000  DualPivotQuickSort  descendente                 ~97.44 s  estimado  [no ejecutado: falló con RecursionError en n=10000 y la profundidad de recursión crece con n]
+  n=  100,000  MergeSort           aleatoria        208.22 ms ± 1.83 ms  medido
+  n=  100,000  MergeSort           ascendente       180.66 ms ± 2.91 ms  medido
+  n=  100,000  MergeSort           descendente     181.16 ms ± 936.5 µs  medido
+  n=  100,000  HeapSort            aleatoria        267.56 ms ± 2.98 ms  medido
+  n=  100,000  HeapSort            ascendente       278.25 ms ± 3.40 ms  medido
+  n=  100,000  HeapSort            descendente      250.95 ms ± 2.43 ms  medido
+  n=  100,000  RadixSort           aleatoria        127.87 ms ± 3.86 ms  medido
+  n=  100,000  RadixSort           ascendente       122.37 ms ± 3.42 ms  medido
+  n=  100,000  RadixSort           descendente      126.73 ms ± 3.10 ms  medido
+  n=  100,000  BucketSort          aleatoria         30.88 ms ± 1.31 ms  medido
+  n=  100,000  BucketSort          ascendente       28.44 ms ± 434.2 µs  medido
+  n=  100,000  BucketSort          descendente      30.17 ms ± 741.4 µs  medido
+  n=1,000,000  InsertionSort       aleatoria                 ~210.1 min  estimado  [predicción 12,607 s > límite de 300 s por ejecución]
+  n=1,000,000  InsertionSort       ascendente        65.16 ms ± 1.46 ms  medido
+  n=1,000,000  InsertionSort       descendente               ~418.6 min  estimado  [predicción 25,114 s > límite de 300 s por ejecución]
+  n=1,000,000  DualPivotQuickSort  aleatoria           1.07 s ± 3.53 ms  medido
+  n=1,000,000  DualPivotQuickSort  ascendente                ~161.5 min  estimado  [no ejecutado: falló con RecursionError en n=10000 y la profundidad de recursión crece con n]
+  n=1,000,000  DualPivotQuickSort  descendente               ~162.4 min  estimado  [no ejecutado: falló con RecursionError en n=10000 y la profundidad de recursión crece con n]
+  n=1,000,000  MergeSort           aleatoria          2.45 s ± 14.35 ms  medido
+  n=1,000,000  MergeSort           ascendente         2.03 s ± 11.62 ms  medido
+  n=1,000,000  MergeSort           descendente        2.02 s ± 19.71 ms  medido
+  n=1,000,000  HeapSort            aleatoria          3.60 s ± 37.43 ms  medido
+  n=1,000,000  HeapSort            ascendente         3.36 s ± 36.13 ms  medido
+  n=1,000,000  HeapSort            descendente        3.17 s ± 24.73 ms  medido
+  n=1,000,000  RadixSort           aleatoria          1.78 s ± 62.37 ms  medido
+  n=1,000,000  RadixSort           ascendente         1.38 s ± 19.85 ms  medido
+  n=1,000,000  RadixSort           descendente        1.48 s ± 30.94 ms  medido
+  n=1,000,000  BucketSort          aleatoria        457.19 ms ± 5.67 ms  medido
+  n=1,000,000  BucketSort          ascendente       282.58 ms ± 1.64 ms  medido
+  n=1,000,000  BucketSort          descendente      303.12 ms ± 2.45 ms  medido
+Listo.
+== 6. Gráficas y tablas ==
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p1_crecimiento_java.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p1_crecimiento_python.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p1_java_vs_python_n1000000.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p1_orden_entrada_java_n1000.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p1_orden_entrada_java_n10000.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p1_orden_entrada_java_n100000.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p1_razones_crecimiento.csv
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p1_resumen.csv

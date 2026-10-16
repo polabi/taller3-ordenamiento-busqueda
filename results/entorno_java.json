@@ -1,0 +1,15 @@
+{
+  "lenguaje": "Java",
+  "vm": "OpenJDK 64-Bit Server VM",
+  "version": "21.0.9",
+  "so": "Mac OS X 26.6.2 (aarch64)",
+  "procesadores": 10,
+  "heap_max_mb": 2048,
+  "argumentos_jvm": "-Xms2g -Xmx2g",
+  "reloj": "System.nanoTime()",
+  "calentamiento": "global 10 rondas n=10000 + por caso hasta 0.25 s o 20 ejecuciones (omitido si prediccion > 60.0 s)",
+  "repeticiones": 5,
+  "limite_s": 300.0,
+  "inicio_utc": "2026-10-15T22:50:38Z",
+  "fin_utc": "2026-10-15T22:59:48Z"
+}

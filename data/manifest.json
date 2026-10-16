@@ -1,0 +1,96 @@
+{
+  "semilla": 20261015,
+  "generador": "random.Random(semilla).randint(MIN, MAX), muestreo con reemplazo",
+  "rango": [
+    10000000,
+    99999999
+  ],
+  "tamanos": [
+    1000,
+    10000,
+    100000,
+    1000000
+  ],
+  "tamanos_anidados": "cada tamaño es el prefijo de la secuencia de 1.000.000",
+  "python": "3.9.6",
+  "plataforma": "macOS-26.6.2-arm64-arm-64bit",
+  "creado_utc": "2026-10-15T21:04:46+00:00",
+  "archivos": {
+    "aleatoria_1000.txt": {
+      "n": 1000,
+      "variante": "aleatoria",
+      "sha256": "f8e4ccf06a8cd3b062044adc6ec31091136e58b8bb6bb5f8a2c883e9796ef01d",
+      "min": 10191138,
+      "max": 99898360,
+      "valores_distintos": 1000,
+      "duplicados": 0
+    },
+    "ascendente_1000.txt": {
+      "n": 1000,
+      "variante": "ascendente",
+      "sha256": "279db487604be9a40da73ac7c7017f6f78f2301ba5da9c2bdf64ef280464de5a"
+    },
+    "descendente_1000.txt": {
+      "n": 1000,
+      "variante": "descendente",
+      "sha256": "26785da0f20e880aa9ea8a3fa95d116fab37cd987604d727a25f53460c39d5dd"
+    },
+    "aleatoria_10000.txt": {
+      "n": 10000,
+      "variante": "aleatoria",
+      "sha256": "836e336a052c979bdaa474dc583378efce15cbb4e8808869f73ab128f7aac040",
+      "min": 10001358,
+      "max": 99986692,
+      "valores_distintos": 10000,
+      "duplicados": 0
+    },
+    "ascendente_10000.txt": {
+      "n": 10000,
+      "variante": "ascendente",
+      "sha256": "ad17487b35aca20d0697d0e1a0aaf524153501a6e36be35d37e9ba70af687418"
+    },
+    "descendente_10000.txt": {
+      "n": 10000,
+      "variante": "descendente",
+      "sha256": "131f170d4734c6abef57cfb4ffad49b90631b8f898ff3866666ecef97b3689a3"
+    },
+    "aleatoria_100000.txt": {
+      "n": 100000,
+      "variante": "aleatoria",
+      "sha256": "9f3b04e6f1a3ec1d6b01495c968036ba9d5bb81569f46c766018f5cc5336e884",
+      "min": 10000148,
+      "max": 99999454,
+      "valores_distintos": 99945,
+      "duplicados": 55
+    },
+    "ascendente_100000.txt": {
+      "n": 100000,
+      "variante": "ascendente",
+      "sha256": "9cbf0b330dcf075b24fef926bc11770204d83415b15a1f38d11de54f1191ba77"
+    },
+    "descendente_100000.txt": {
+      "n": 100000,
+      "variante": "descendente",
+      "sha256": "68c77809b0171f000c836e49938edc3324670505a75543f423f2b512c7f34a4e"
+    },
+    "aleatoria_1000000.txt": {
+      "n": 1000000,
+      "variante": "aleatoria",
+      "sha256": "89cc83d9bbd6c4f29e537c9962819fba024596fec42688835aa4f9d348cd8b85",
+      "min": 10000033,
+      "max": 99999964,
+      "valores_distintos": 994396,
+      "duplicados": 5604
+    },
+    "ascendente_1000000.txt": {
+      "n": 1000000,
+      "variante": "ascendente",
+      "sha256": "4fc2f41e0018e569cba5e2965011ebfa7bcf13144c287ae5341f001bbbfbf695"
+    },
+    "descendente_1000000.txt": {
+      "n": 1000000,
+      "variante": "descendente",
+      "sha256": "289eed29de4b939ee635448d6444977d684b7831aa879641f8b0f3530e78c3f9"
+    }
+  }
+}
