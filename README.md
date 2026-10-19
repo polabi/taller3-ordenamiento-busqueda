@@ -71,12 +71,12 @@ java -Xms2g -Xmx2g -cp java/out taller3.bench.SortBenchmark          # benchmark
 (cd python && python3 -m taller3.plot_sort)                           # gráficas
 ```
 
-**Duración esperada.** En la máquina donde se validó el flujo (nube, 2 vCPU) la corrida
-completa tomó ≈ 18 min en Java y ≈ 27 min en Python. Casi todo ese tiempo se va en
-Insertion Sort: n = 10⁶ en Java (≈ 1,2 min por ejecución con entrada aleatoria y ≈ 2,3 min
-con descendente) y n = 10⁵ en Python (≈ 3,8 min por ejecución, aleatoria). En un equipo más
-rápido tarda menos. Corre con el cargador conectado y sin usar el equipo: otras
-aplicaciones abiertas agregan ruido a las mediciones.
+**Duración de referencia.** En el equipo donde se hicieron las mediciones del informe
+(MacBook Pro con Apple Silicon, 10 núcleos, macOS) la corrida completa tomó unos 9 min en Java
+y unos 34 min en Python. La mayor parte del tiempo se va en Insertion Sort: con n = 10⁶ en Java
+tarda unos 34 s por ejecución con entrada aleatoria y unos 66 s con descendente; con n = 10⁵
+en Python, unos 2,1 min (aleatoria) y 4,2 min (descendente). Las mediciones deben hacerse con
+el equipo conectado a la corriente y sin otras aplicaciones abiertas, porque agregan ruido.
 
 Corridas parciales para depurar: `--sizes 1000,10000` (Java) / `--sizes 1000 10000` (Python),
 `--algos`, `--variants`, `--reps`, `--limit`, `--out`.
@@ -190,9 +190,9 @@ logarítmico, estimados punteados o rayados, valores visibles sobre las barras) 
   | O(n log n) | 13,3 | 12,5 | 12 |
   | O(n²) | 100 | 100 | 100 |
 
-  Cuando la razón observada se aleje de la teórica, busca la causa en tus propios datos:
-  costos fijos que dominan con n pequeño, el arreglo deja de caber en la caché, JIT o GC
-  (Java), *boxing* (Bucket en Java), etc. Las filas `medido->estimado` reproducen la
+  Cuando la razón observada se aleja de la teórica, las causas habituales son los términos
+  de menor orden y los costos fijos con n pequeño, el tamaño de los datos frente a la caché,
+  el JIT o el GC (Java) y el *boxing* (Bucket Sort en Java). Las filas `medido->estimado` reproducen la
   razón teórica por construcción: no sirven como evidencia, solo muestran la extrapolación.
 - `figures/p1_resumen.csv`: promedio, desviación y coeficiente de variación (CV) de
   cada caso, listo para las tablas del informe. Un CV alto en n = 1.000 es esperable:

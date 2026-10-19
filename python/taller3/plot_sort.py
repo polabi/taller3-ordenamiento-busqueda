@@ -89,15 +89,18 @@ def lookup(rows: list[dict]) -> dict[tuple, dict]:
 
 # ------------------------------------------------------------- formato
 def fmt_time(s: float) -> str:
+    """Tiempo legible con coma decimal, como en el informe (p. ej. 1,37 s)."""
     if s < 1e-3:
-        return f"{s * 1e6:.3g} µs"
-    if s < 1:
-        return f"{s * 1e3:.3g} ms"
-    if s < 120:
-        return f"{s:.3g} s"
-    if s < 7200:
-        return f"{s / 60:.3g} min"
-    return f"{s / 3600:.3g} h"
+        txt = f"{s * 1e6:.3g} µs"
+    elif s < 1:
+        txt = f"{s * 1e3:.3g} ms"
+    elif s < 120:
+        txt = f"{s:.3g} s"
+    elif s < 7200:
+        txt = f"{s / 60:.3g} min"
+    else:
+        txt = f"{s / 3600:.3g} h"
+    return txt.replace(".", ",")
 
 
 def fmt_n(n: int) -> str:

@@ -5,7 +5,7 @@ Generador ÚNICO de los datos de prueba (se ejecuta una sola vez).
     python3 -m taller3.generate_data            # genera data/ si no existe
     python3 -m taller3.generate_data --force    # regenera (sobrescribe)
 
-Decisiones de diseño (documéntalas en el informe):
+Decisiones de diseño:
 - Un solo generador para ambos lenguajes: Java NO genera datos, solo los lee.
   Así es imposible que Java y Python midan con conjuntos distintos.
 - Semilla fija (config.SEED) con random.Random (Mersenne Twister), que es
@@ -50,7 +50,7 @@ def main() -> int:
                 if dataset_path(v, n).exists()]
     if existing and not args.force:
         print(f"Los datos ya existen en {config.DATA_DIR} ({len(existing)} archivos).")
-        print("Los datos se generan UNA sola vez. Usa --force solo si de verdad quieres regenerarlos.")
+        print("Los datos se generan una sola vez; para regenerarlos hay que pasar --force.")
         return 0
 
     max_n = max(config.SIZES)
