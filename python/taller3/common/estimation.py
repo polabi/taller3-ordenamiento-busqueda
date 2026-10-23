@@ -6,7 +6,8 @@ Método (idéntico en Estimator.java):
 
 donde n_med es el MAYOR tamaño realmente medido para ese algoritmo y variante,
 t(n_med) su promedio, y f la complejidad teórica del caso correspondiente
-(O(n), O(n log n) u O(n²)). Se usa el mayor n medido porque en n pequeños
+(O(n), O(n log n) u O(n²); en el Punto 2 también O(log n), O(√n)
+y O(log log n)). Se usa el mayor n medido porque en n pequeños
 dominan costos constantes (llamadas, caché, temporizador) y la razón sería
 menos representativa.
 
@@ -23,12 +24,22 @@ class Growth(Enum):
     N = "O(n)"
     NLOGN = "O(n log n)"
     N2 = "O(n^2)"
+    # Punto 2 (búsqueda). Agregarlos no cambia el comportamiento de los tres anteriores.
+    LOGN = "O(log n)"
+    SQRTN = "O(sqrt n)"
+    LOGLOGN = "O(log log n)"
 
     def f(self, n: int) -> float:
         if self is Growth.N:
             return float(n)
         if self is Growth.NLOGN:
             return n * math.log2(n)
+        if self is Growth.LOGN:
+            return math.log2(n)
+        if self is Growth.SQRTN:
+            return math.sqrt(n)
+        if self is Growth.LOGLOGN:
+            return math.log2(math.log2(n))
         return float(n) * n
 
 

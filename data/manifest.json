@@ -91,6 +91,19 @@
       "n": 1000000,
       "variante": "descendente",
       "sha256": "289eed29de4b939ee635448d6444977d684b7831aa879641f8b0f3530e78c3f9"
+    },
+    "claves_busqueda.txt": {
+      "n": 1000,
+      "variante": "claves_busqueda",
+      "sha256": "22fdc47fbcdd3e4b4d26fbcd3eae5010bb3becaa981337c9fe9fa41aaa0c965f",
+      "semilla": 20261016,
+      "presentes": 500,
+      "ausentes": 500,
+      "origen_presentes": "rng.sample(aleatoria_1000.txt, 500)",
+      "origen_ausentes": "randint(MIN, MAX) con rechazo si está en aleatoria_1000000.txt o repetida",
+      "orden": "presentes + ausentes, luego rng.shuffle",
+      "python": "3.9.6",
+      "creado_utc": "2026-10-23T04:07:10+00:00"
     }
   }
 }

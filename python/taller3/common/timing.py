@@ -11,6 +11,8 @@ Reglas que garantiza esta función:
    la desviación estándar. (El conteo de referencias de CPython sigue
    liberando memoria normalmente; solo se pausa el detector de ciclos.)
 4. La verificación del resultado la hace quien llama, fuera del tiempo.
+
+time_searches (Punto 2) aplica las mismas reglas a una pasada de búsquedas.
 """
 from __future__ import annotations
 
@@ -32,6 +34,30 @@ def time_inplace(func: Callable[[list[int]], None], base: list[int]) -> tuple[in
         if gc_was_enabled:
             gc.enable()
     return t1 - t0, work
+
+
+def time_searches(func: Callable[[list[int], int], int], arr: list[int],
+                  keys: list[int], out: list[int]) -> int:
+    """Mide UNA pasada: out[j] = func(arr, keys[j]) para j = 0..K-1 (Punto 2, spec 6.3).
+
+    - No copia arr: la búsqueda no lo modifica (el benchmark lo comprueba al final de cada n).
+    - out viene preasignado por quien llama (fuera del tiempo) y guarda cada resultado:
+      así el trabajo no se descarta y la verificación/checksum se hacen después, fuera
+      del tiempo. Mismo manejo del gc que time_inplace.
+    """
+    k = len(keys)
+    gc.collect()
+    gc_was_enabled = gc.isenabled()
+    gc.disable()
+    try:
+        t0 = time.perf_counter_ns()
+        for j in range(k):
+            out[j] = func(arr, keys[j])
+        t1 = time.perf_counter_ns()
+    finally:
+        if gc_was_enabled:
+            gc.enable()
+    return t1 - t0
 
 
 def fmt_ns(ns: float) -> str:

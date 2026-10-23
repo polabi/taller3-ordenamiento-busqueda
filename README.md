@@ -3,8 +3,9 @@
 Comparación experimental de algoritmos de ordenamiento y búsqueda en un lenguaje
 compilado (Java, `System.nanoTime()`) y uno interpretado (Python, `time.perf_counter_ns()`).
 
-> Estado: **base común + Punto 1 (ordenamiento)**. Punto 2 (búsqueda) y Punto 3 se
-> agregan sobre esta misma estructura.
+> Estado: **base común + Punto 1 (ordenamiento) + Punto 2 (búsqueda: código, pruebas y
+> scripts; mediciones oficiales pendientes en el Mac del Punto 1)**. Punto 3 se agrega
+> sobre esta misma estructura. Spec del Punto 2: `specs/p2-busqueda.md`.
 
 ---
 
@@ -13,10 +14,13 @@ compilado (Java, `System.nanoTime()`) y uno interpretado (Python, `time.perf_cou
 ```
 taller3/
 ├── run_punto1.sh                 # todo el Punto 1 de principio a fin
+├── run_punto2.sh                 # todo el Punto 2 (verifica el entorno antes de medir)
+├── scripts/entorno_medicion.sh   # helper: .venv obligatorio + verificación del equipo de medición
 ├── data/                         # datos de prueba (se generan UNA vez, se versionan en Git)
 │   ├── aleatoria_{n}.txt         # n ∈ {1000, 10000, 100000, 1000000}
 │   ├── ascendente_{n}.txt
 │   ├── descendente_{n}.txt
+│   ├── claves_busqueda.txt       # Punto 2: 1.000 claves (500 presentes, 500 ausentes)
 │   └── manifest.json             # semilla, SHA-256 y estadísticas de cada archivo
 ├── results/                      # CSV de resultados + entorno de ejecución
 │   ├── ordenamiento_java.csv
@@ -80,6 +84,50 @@ el equipo conectado a la corriente y sin otras aplicaciones abiertas, porque agr
 
 Corridas parciales para depurar: `--sizes 1000,10000` (Java) / `--sizes 1000 10000` (Python),
 `--algos`, `--variants`, `--reps`, `--limit`, `--out`.
+
+### 2.1 Punto 2 (búsqueda)
+
+```bash
+bash run_punto2.sh                    # corrida OFICIAL (solo en el Mac del Punto 1)
+bash run_punto2.sh --skip-env-check   # solo para probar en otra máquina (alias --no-medir)
+```
+
+`run_punto2.sh` hace: claves (las genera si faltan y verifica su SHA-256) → compilación →
+pruebas del Punto 2 (`SearchSelfTest`, `SearchBenchSelfTest`, `SearchEquivalenceSelfTest`,
+`test_searching`, `test_search_protocol`, `test_search_equivalence`, `test_plot_search`) →
+benchmark Java (`-Xms2g -Xmx2g`) → benchmark Python → equivalencia Java ↔ Python, gráficas
+y tablas. Salidas: `results/busqueda_{java,python}.csv`, `results/entorno_busqueda_{java,python}.json`,
+`figures/p2_*`.
+
+**Dónde se mide.** Las mediciones oficiales (Puntos 1, 2 y 3) se hacen en el **mismo
+Mac del Punto 1** (macOS 26.6.2, 10 núcleos, Java 21.0.9, Python 3.9.6 del `.venv`), para
+que los resultados sean comparables. Antes de medir, `run_punto2.sh` compara el entorno
+actual con `results/entorno_java.json` y `results/entorno_python.json` y **aborta** si no
+coincide (`scripts/entorno_medicion.sh`, reutilizable por `run_punto3.sh`). Con
+`--skip-env-check` no se verifica el entorno, pero la corrida es corta (2 repeticiones,
+límite de 5 s, que fuerza algunos estimados) y **todas** sus salidas van a un directorio
+temporal: nunca escribe en `results/` ni en `figures/`.
+
+**Intérprete.** Todos los `run_punto*.sh` usan `.venv/bin/python` y abortan si no existe
+(no caen al `python3` del PATH): `python3 -m venv .venv && .venv/bin/pip install matplotlib`.
+`run_punto1.sh` corre solo las pruebas del Punto 1.
+
+Paso a paso y corridas parciales (desde la raíz):
+
+```bash
+(cd python && ../.venv/bin/python -m taller3.generate_data)        # claves, si faltan
+java -Xms2g -Xmx2g -cp java/out taller3.bench.SearchBenchmark --sizes 1000,10000 --out results/prueba_busq_java.csv
+(cd python && ../.venv/bin/python -m taller3.bench_search --sizes 1000 10000 --out ../results/prueba_busq_python.csv)
+(cd python && ../.venv/bin/python -m taller3.plot_search --java ../results/prueba_busq_java.csv \
+                                     --python ../results/prueba_busq_python.csv --out /tmp/figs)
+```
+
+Flags de los benchmarks: `--sizes`, `--algos`, `--variants` (`claves`, `inicio`, `centro`,
+`centro_alto`, `final`), `--reps`, `--limit`, `--out`. Con `--out X.csv` el entorno va a
+`entorno_X.json` junto al CSV (ojo: `results/entorno_prueba_*.json` no está en `.gitignore`).
+Duración estimada de la corrida oficial: Python ≈ 17 min solo para la variante de
+interpolación con división entera (spec 6.5); Java, por medir (una corrida de humo con
+2 repeticiones tardó ≈ 32 s en otro equipo).
 
 ## 3. Datos de prueba: decisiones de diseño
 

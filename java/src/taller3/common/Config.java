@@ -40,4 +40,13 @@ public final class Config {
     public static final int CASE_WARMUP_MAX_RUNS = 20;
     public static final double CASE_WARMUP_TARGET_SECONDS = 0.25;
     public static final double CASE_WARMUP_SKIP_ABOVE_SECONDS = 60;
+
+    // --- Punto 2 (búsqueda). SEARCH_KEYS_SEED no se replica: Java no genera datos.
+    public static final String SEARCH_KEYS_FILE = "claves_busqueda.txt";
+    public static final int NUM_SEARCH_KEYS = 1000;            // 1 pasada = 1.000 búsquedas (D9)
+    public static final int NUM_PRESENT_KEYS = 500;
+    /** Experimento de posición: solo en n = 10^6 (D7). Dos centros porque n es par (D3). */
+    public static final int POSITION_N = 1_000_000;
+    public static final String[] POSITION_VARIANTS = {"inicio", "centro", "centro_alto", "final"};
+    public static final String[] SEARCH_VARIANTS = {"claves", "inicio", "centro", "centro_alto", "final"};
 }

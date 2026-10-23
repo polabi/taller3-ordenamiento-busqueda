@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Lectura de los archivos planos (un entero por línea, ASCII, sin encabezado).
@@ -40,5 +42,19 @@ public final class DataIO {
             throw new IOException(path.getFileName() + ": se esperaban " + expectedN + " valores y hay " + count);
         }
         return values;
+    }
+
+    /**
+     * Lee las 1.000 claves del Punto 2 (data/claves_busqueda.txt) en el orden del archivo.
+     * Cantidad y rango los valida readInts; además falla si hay claves repetidas
+     * (spec p2 6.1.2). No comprueba el SHA-256 (eso lo hace el generador de Python).
+     */
+    public static int[] readSearchKeys(Path dataDir) throws IOException {
+        int[] keys = readInts(dataDir.resolve(Config.SEARCH_KEYS_FILE), Config.NUM_SEARCH_KEYS);
+        Set<Integer> seen = new HashSet<>();
+        for (int k : keys) {
+            if (!seen.add(k)) throw new IOException(Config.SEARCH_KEYS_FILE + ": clave repetida " + k);
+        }
+        return keys;
     }
 }

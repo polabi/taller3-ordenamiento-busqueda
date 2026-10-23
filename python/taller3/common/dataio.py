@@ -50,6 +50,23 @@ def read_ints(path: Path, expected_n: int | None = None,
     return values
 
 
+def search_keys_path(data_dir: Path = config.DATA_DIR) -> Path:
+    """Ruta del archivo de claves del Punto 2: data/claves_busqueda.txt."""
+    return data_dir / config.SEARCH_KEYS_FILE
+
+
+def load_search_keys(data_dir: Path = config.DATA_DIR) -> list[int]:
+    """Lee las 1.000 claves en el orden del archivo (cantidad y rango los valida read_ints).
+
+    Además exige que no haya repetidas (spec p2 6.1.2): una clave repetida pesaría doble
+    en el promedio y en el checksum. No comprueba el SHA-256 (eso lo hace el generador).
+    """
+    keys = read_ints(search_keys_path(data_dir), config.NUM_SEARCH_KEYS)
+    if len(set(keys)) != len(keys):
+        raise ValueError(f"{config.SEARCH_KEYS_FILE}: hay {len(keys) - len(set(keys))} claves repetidas")
+    return keys
+
+
 def sha256_of(path: Path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
