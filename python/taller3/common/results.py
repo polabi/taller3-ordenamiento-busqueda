@@ -140,3 +140,43 @@ class SearchCsvWriter:
 
     def __exit__(self, *exc) -> None:
         self.close()
+
+
+# ======================================================================================
+# Punto 3 (experimento de supuestos): escritor NUEVO; los anteriores quedan sin cambios.
+# Mismo esquema que el del Punto 1 + columna `distribucion` después de `variante`
+# (spec p3 7.2; mismo esquema que SupuestosCsvWriter.java). Reutiliza ResultRecord.
+# ======================================================================================
+class SupuestosCsvWriter:
+    def __init__(self, path: Path, repetitions: int = config.REPETITIONS):
+        self.path = path
+        self.repetitions = repetitions
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self._fh = open(path, "w", encoding="utf-8", newline="")
+        self._w = csv.writer(self._fh)
+        self._w.writerow(
+            ["algoritmo", "lenguaje", "variante", "distribucion", "n"]
+            + [f"rep_{i}_ns" for i in range(1, repetitions + 1)]
+            + ["promedio_ns", "desv_estandar_ns", "estado", "causa", "base_estimacion"]
+        )
+        self._fh.flush()
+
+    def write(self, record: ResultRecord, distribucion: str) -> None:
+        r = record
+        reps = [str(t) for t in r.reps_ns] + [""] * (self.repetitions - len(r.reps_ns))
+        self._w.writerow(
+            [r.algoritmo, r.lenguaje, r.variante, distribucion, r.n]
+            + reps
+            + [_opt(r.promedio_ns, ".1f"), _opt(r.desv_estandar_ns, ".1f"),
+               r.estado, r.causa, r.base_estimacion]
+        )
+        self._fh.flush()
+
+    def close(self) -> None:
+        self._fh.close()
+
+    def __enter__(self) -> "SupuestosCsvWriter":
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self.close()
