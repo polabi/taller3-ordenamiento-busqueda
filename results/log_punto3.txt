@@ -1,0 +1,54 @@
+== 0. Intérprete y entorno de medición ==
+Python: /Users/santiagopolaniapinzon/Downloads/taller3/.venv/bin/python (Python 3.9.6)
+Entorno exigido: arch=arm64 macOS=26.6.2 nucleos=10 java=21.0.9 python=3.9.6
+Entorno actual:  arch=arm64 macOS=26.6.2 nucleos=10 java=21.0.9 python=3.9.6
+Equipo:          Mac17,2 / Apple M5
+== 1. Datos del Punto 3 (solo se generan si faltan; si existen se verifica su SHA-256) ==
+Los datos ya existen en /Users/santiagopolaniapinzon/Downloads/taller3/data (12 archivos).
+Los datos se generan una sola vez; para regenerarlos hay que pasar --force.
+Las claves ya existen y su SHA-256 coincide con el manifiesto: /Users/santiagopolaniapinzon/Downloads/taller3/data/claves_busqueda.txt
+Los datos del Punto 3 ya existen y sus SHA-256 coinciden con el manifiesto: /Users/santiagopolaniapinzon/Downloads/taller3/data/p3
+SHA-256 de los 7 archivos de data/p3/ OK
+== 2. Compilación Java ==
+== 3. Pruebas del Punto 3 ==
+SupuestosSelfTest: 31/31 comprobaciones OK
+== 4. Benchmark Java (compilado) ==
+[Java] OpenJDK 64-Bit Server VM 21.0.9 | reps=5 | límite=300 s | salida: results/supuestos_java.csv
+[Java] Calentamiento global: 10 rondas x 1 algoritmos, n=10,000 aleatoria...
+  n=   10,000  BucketSort  uniforme                    242.6 µs ± 13.8 µs  medido
+  n=   10,000  BucketSort  rango_pequeno                133.3 µs ± 4.9 µs  medido
+  n=   10,000  BucketSort  concentrado_extremos         3.98 ms ± 60.3 µs  medido
+  n=  100,000  BucketSort  uniforme                    2.38 ms ± 175.2 µs  medido
+  n=  100,000  BucketSort  rango_pequeno                1.28 ms ± 39.4 µs  medido
+  n=  100,000  BucketSort  concentrado_extremos       429.99 ms ± 1.08 ms  medido
+Listo.
+== 5. Benchmark Python (interpretado) ==
+[Python] 3.9.6 | reps=5 | límite=300 s | salida: /Users/santiagopolaniapinzon/Downloads/taller3/results/supuestos_python.csv
+  n=   10,000  BucketSort  uniforme                     2.86 ms ± 41.2 µs  medido
+  n=   10,000  BucketSort  rango_pequeno                2.58 ms ± 86.4 µs  medido
+  n=   10,000  BucketSort  concentrado_extremos      110.59 ms ± 867.2 µs  medido
+  n=   10,000  RadixSort   uniforme                   11.25 ms ± 115.3 µs  medido
+  n=   10,000  RadixSort   digitos16                  26.54 ms ± 351.7 µs  medido
+  n=  100,000  BucketSort  uniforme                   29.16 ms ± 921.7 µs  medido
+  n=  100,000  BucketSort  rango_pequeno              26.21 ms ± 496.8 µs  medido
+  n=  100,000  BucketSort  concentrado_extremos       11.42 s ± 149.48 ms  medido
+  n=  100,000  RadixSort   uniforme                   121.44 ms ± 1.64 ms  medido
+  n=  100,000  RadixSort   digitos16                  284.42 ms ± 3.07 ms  medido
+  n=1,000,000  RadixSort   uniforme                     1.73 s ± 33.30 ms  medido
+  n=1,000,000  RadixSort   digitos16                    4.05 s ± 92.36 ms  medido
+Listo.
+== 6. Tablas, k* y gráficas ==
+  k* Java   (RadixSort): 167.2425 -> k_min = 168  [medido]
+  k* Python (BucketSort): 35.5704 -> k_min = 36  [medido]
+  (aviso de plausibilidad) Java: t_L(claves)/t_L(final) = 0.942 fuera de [0.65, 0.85]: el costo de la lineal no sería proporcional a sus comparaciones.
+  (aviso de plausibilidad) Java: BucketSort uniforme n=10000 difiere +44% del Punto 1 (> 30 %: condiciones de la máquina distintas).
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_comparativos.csv
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_comparativos.md
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_costo_vs_k_java.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_costo_vs_k_python.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_k_estrella.csv
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_k_estrella.md
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_limite_inferior.csv
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_supuestos.csv
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_supuestos.md
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p3_supuestos.png
