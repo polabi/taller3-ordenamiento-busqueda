@@ -1,0 +1,13 @@
+lenguaje,algoritmo,tipo,promedio_ns,ns_por_nlog2n,ns_por_elemento,razon_10e6_10e5,estado
+Java,InsertionSort,comparativo,33742183375.2,1692.9016,33742.1834,103.19,medido
+Java,DualPivotQuickSort,comparativo,48951041.8,2.4560,48.9510,12.89,medido
+Java,MergeSort,comparativo,69585974.8,3.4912,69.5860,12.78,medido
+Java,HeapSort,comparativo,77055649.8,3.8660,77.0556,13.41,medido
+Java,RadixSort,no_comparativo,16087758.4,0.8071,16.0878,10.62,medido
+Java,BucketSort,no_comparativo,76855674.8,3.8560,76.8557,31.24,medido
+Python,InsertionSort,comparativo,12606782949160.0,632503.3028,12606782.9492,100.00,estimado
+Python,DualPivotQuickSort,comparativo,1065367725.0,53.4513,1065.3677,12.69,medido
+Python,MergeSort,comparativo,2445603299.8,122.7000,2445.6033,11.75,medido
+Python,HeapSort,comparativo,3601361050.0,180.6863,3601.3610,13.46,medido
+Python,RadixSort,no_comparativo,1775541275.0,89.0819,1775.5413,13.89,medido
+Python,BucketSort,no_comparativo,457194941.8,22.9382,457.1949,14.80,medido

@@ -1,0 +1,40 @@
+{
+  "lenguaje": "Python",
+  "implementacion": "CPython",
+  "version": "3.9.6 (default, Apr  7 2026, 02:38:40) \n[Clang 21.0.0 (clang-2100.0.123.102)]",
+  "plataforma": "macOS-26.6.2-arm64-arm-64bit",
+  "procesador": "arm",
+  "modelo": "Mac17,2",
+  "cpu": "Apple M5",
+  "nucleos": 10,
+  "reloj": "time.perf_counter_ns()",
+  "gc": "gc.collect() antes y gc.disable() durante cada medición (como timeit)",
+  "repeticiones": 5,
+  "limite_s": 300,
+  "tamanos": [
+    10000,
+    100000,
+    1000000
+  ],
+  "algoritmos": [
+    "BucketSort",
+    "RadixSort"
+  ],
+  "distribuciones": [
+    "uniforme",
+    "rango_pequeno",
+    "concentrado_extremos",
+    "digitos16"
+  ],
+  "datos_p3_sha256": {
+    "p3/rango_pequeno_10000.txt": "003a0b993de857ec96c4905b93e6e57bc1c24fd0ea711ce506fc1a3a163fcc76",
+    "p3/concentrado_extremos_10000.txt": "98faca8f71baf19fd0a9c38e92dd4bfa69b37f8c2cd2fb6c221a6dc074035fce",
+    "p3/digitos16_10000.txt": "e3070fb38fcd24158fc39f3df21321553c82798cfb88bd17dae04236691dc49b",
+    "p3/rango_pequeno_100000.txt": "769ed52b6fa6c50f04e40cbc33587aea8f53ca1331162a9549a7620b1c5db22a",
+    "p3/concentrado_extremos_100000.txt": "6c229b3698df7ac7e1e7acf9fd2f7498692228070d1a311b2ca7e1f3cd77faa9",
+    "p3/digitos16_100000.txt": "498749d81d819d233cfc59f743333278ea46470f79a0f870bb2179cba365e510",
+    "p3/digitos16_1000000.txt": "211b340833ed98ddb22c5e786a746d08313bff08fa3d571a016b8f0e8cae1317"
+  },
+  "inicio_utc": "2026-10-24T04:33:38+00:00",
+  "fin_utc": "2026-10-24T04:35:08+00:00"
+}

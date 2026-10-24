@@ -1,0 +1,25 @@
+{
+  "lenguaje": "Java",
+  "vm": "OpenJDK 64-Bit Server VM",
+  "version": "21.0.9",
+  "so": "Mac OS X 26.6.2 (aarch64)",
+  "modelo": "Mac17,2",
+  "cpu": "Apple M5",
+  "procesadores": 10,
+  "heap_max_mb": 2048,
+  "argumentos_jvm": "-Xms2g -Xmx2g",
+  "reloj": "System.nanoTime()",
+  "calentamiento": "global 10 rondas n=10000 (BucketSort) + por caso hasta 0.25 s o 20 ejecuciones (omitido si prediccion > 60.0 s)",
+  "repeticiones": 5,
+  "limite_s": 300.0,
+  "tamanos": [10000, 100000],
+  "distribuciones": ["uniforme", "rango_pequeno", "concentrado_extremos"],
+  "datos_p3_sha256": {
+    "p3/rango_pequeno_10000.txt": "003a0b993de857ec96c4905b93e6e57bc1c24fd0ea711ce506fc1a3a163fcc76",
+    "p3/concentrado_extremos_10000.txt": "98faca8f71baf19fd0a9c38e92dd4bfa69b37f8c2cd2fb6c221a6dc074035fce",
+    "p3/rango_pequeno_100000.txt": "769ed52b6fa6c50f04e40cbc33587aea8f53ca1331162a9549a7620b1c5db22a",
+    "p3/concentrado_extremos_100000.txt": "6c229b3698df7ac7e1e7acf9fd2f7498692228070d1a311b2ca7e1f3cd77faa9"
+  },
+  "inicio_utc": "2026-10-24T04:33:35Z",
+  "fin_utc": "2026-10-24T04:33:38Z"
+}

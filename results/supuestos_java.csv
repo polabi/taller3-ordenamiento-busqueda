@@ -1,0 +1,7 @@
+algoritmo,lenguaje,variante,distribucion,n,rep_1_ns,rep_2_ns,rep_3_ns,rep_4_ns,rep_5_ns,promedio_ns,desv_estandar_ns,estado,causa,base_estimacion
+BucketSort,Java,aleatoria,uniforme,10000,248334,255833,221291,236875,250792,242625.0,13801.7,medido,,
+BucketSort,Java,aleatoria,rango_pequeno,10000,131708,125709,136042,134416,138416,133258.2,4875.6,medido,,
+BucketSort,Java,aleatoria,concentrado_extremos,10000,3985458,4082750,3971917,3919541,3961708,3984274.8,60314.2,medido,,
+BucketSort,Java,aleatoria,uniforme,100000,2612458,2529167,2233000,2305458,2240791,2384174.8,175174.9,medido,,
+BucketSort,Java,aleatoria,rango_pequeno,100000,1304083,1216375,1259250,1306250,1301958,1277583.2,39372.3,medido,,
+BucketSort,Java,aleatoria,concentrado_extremos,100000,429995125,430273125,430794917,428156792,430741791,429992350.0,1078643.9,medido,,

@@ -1,0 +1,8 @@
+lenguaje,rol,algoritmo_orden,t_ord_ns,fuente_t_lineal,t_lineal_ns,t_binaria_ns,k_estrella,k_min,k_bajo,k_alto,estado
+Java,principal,RadixSort,16087758.4,claves,96271.250,77.066,167.2425,168,161.0794,173.8278,medido
+Java,banda,RadixSort,16087758.4,solo_presentes,50720.733,77.066,317.6657,318,315.1389,320.2078,medido
+Java,banda,RadixSort,16087758.4,solo_ausentes,102214.150,77.066,157.5114,158,156.4206,158.6066,medido
+Python,principal,BucketSort,457194941.8,claves,12855048.875,1814.625,35.5704,36,34.5485,36.6272,medido
+Python,banda,BucketSort,457194941.8,solo_presentes,8875285.933,1814.625,51.5238,52,49.3775,53.8053,medido
+Python,banda,BucketSort,457194941.8,solo_ausentes,17193106.192,1814.625,26.5946,27,25.4513,27.8133,medido
+Python,sensibilidad_orden,RadixSort,1775541275.0,claves,12855048.875,1814.625,138.1396,139,131.0833,145.4373,medido
