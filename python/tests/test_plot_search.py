@@ -434,7 +434,8 @@ class TestTablasDeApoyo(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             out = Path(d) / "razones.csv"
             ps.write_growth_ratios(self._idx(rows), out)
-            got = list(_csv.DictReader(open(out, encoding="utf-8")))
+            with open(out, encoding="utf-8", newline="") as f:
+                got = list(_csv.DictReader(f))
         lin = [(r["n_desde"], r["n_hasta"]) for r in got if r["algoritmo"] == "LinearSearch"]
         self.assertEqual(lin, [("1000", "10000"), ("10000", "100000")])   # sin 10^5 -> 10^6
         self.assertTrue(any(r["algoritmo"] == "BinarySearch" and r["n_hasta"] == "1000000"

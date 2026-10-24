@@ -855,13 +855,15 @@ difiere de esta tabla (indicaría desviación del pseudocódigo no detectada por
     ≈ 9 s por pasada `final`.
   - Variante entera, Python: ≈ 81 ns por iteración → ≈ 5·10⁸ iteraciones por pasada de
     `claves` en 10⁶ ≈ **40 s**; `centro`/`centro_alto` ≈ 40 s; `final` ≈ **81 s** por
-    pasada. Todas < 300 s → se miden, pero suman ≈ **17 min** al benchmark de Python
-    (5 × (40 + 40 + 40 + 81) s). En Java se espera del orden de segundos (*por medir*).
+    pasada. Todas < 300 s → se miden. (Estimación original: ≈ 17 min al benchmark de
+    Python; **superada**, ver el punto siguiente.) En Java se espera del orden de segundos.
   - **Duración total (corregido 2026-10-23, auditoría, hallazgo C):** esos órdenes vienen
-    de pruebas informales en otro equipo y con otro Python. Con Python 3.9.6 la corrida
-    completa del benchmark de Python (lineal + variante entera en los 4 tamaños y las 4
-    posiciones, más el resto) puede tardar **≈ 40 min o más**; reservar ≈ 1 h para
-    `run_punto2.sh`. Si en esa máquina la pasada `final` de la variante entera supera
+    de pruebas informales en otro equipo y con otro Python. Una corrida de prueba en el Mac
+    oficial (Python 3.9.6, 2026-10-23) predijo por pasada en 10⁶: lineal ≈ 13 s (`claves`),
+    ≈ 8,6 s (`centro`), ≈ 17 s (`final`); variante entera ≈ 76 s (`claves`, `centro`,
+    `centro_alto`) y ≈ 151 s (`final`). Con 5 repeticiones: variante ≈ 32 min, lineal
+    ≈ 4 min → benchmark de Python **≈ 40 min**; reservar ≈ 1 h para `run_punto2.sh`.
+    Todas las pasadas quedan < 300 s, así que se espera medir todo. Si en esa máquina la pasada `final` de la variante entera supera
     300 s, queda estimada (solo esa posición; ver arriba).
   - El mecanismo de estimación existe por la regla del taller; con estos órdenes no
     debería activarse, pero si la máquina de la corrida es ≈ 4× más lenta, la pasada
@@ -1304,7 +1306,6 @@ Pendientes:
 - Las referencias de libro de 3.7 (edición/página del sílabo) siguen *por confirmar*.
 - ¿Se quiere también la mediana en `p2_resumen.csv`? El taller pide promedio y
   desviación; la mediana sería solo informativa.
-- Costo de tiempo de la variante entera: ≈ 17 min más en el benchmark de Python
-  según la estimación informal de 6.5; la corrida completa de Python puede tardar
-  ≈ 40 min o más (corrección C del 2026-10-23). Para depurar se puede excluir con `--algos`; en la corrida
+- Costo de tiempo de la variante entera: ≈ 32 min del benchmark de Python, que en total
+  tarda ≈ 40 min (6.5, corrección C del 2026-10-23). Para depurar se puede excluir con `--algos`; en la corrida
   oficial (`run_punto2.sh`) se incluye.

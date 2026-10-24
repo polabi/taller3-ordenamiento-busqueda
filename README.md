@@ -137,11 +137,20 @@ java -Xms2g -Xmx2g -cp java/out taller3.bench.SearchBenchmark --sizes 1000,10000
 Flags de los benchmarks: `--sizes`, `--algos`, `--variants` (`claves`, `inicio`, `centro`,
 `centro_alto`, `final`), `--reps`, `--limit`, `--out`. Con `--out X.csv` el entorno va a
 `entorno_X.json` junto al CSV (ojo: `results/entorno_prueba_*.json` no está en `.gitignore`).
-Duración estimada de la corrida oficial: el benchmark de Python puede tardar **≈ 40 min o
-más** (la lineal y la variante de interpolación con división entera recorren hasta 10⁶
-elementos por búsqueda; solo la variante suma ≈ 17 min según la estimación informal de la
-spec 6.5, medida con otro Python en otro equipo); Java, pocos minutos. Reserva ≈ 1 h y
-corre `caffeinate -i bash run_punto2.sh` para que el Mac no se duerma.
+Duración estimada de la corrida oficial (con los tiempos por pasada que predijo una corrida
+de prueba en el Mac del Punto 1, Python 3.9.6, 2026-10-23): el benchmark de Python tarda
+**≈ 40 min**: la variante de interpolación con división entera ≈ 32 min (en 10⁶, ≈ 76 s por
+pasada en `claves`, `centro` y `centro_alto` y ≈ 151 s en `final`, × 5 repeticiones) y la
+lineal ≈ 4 min; el resto, segundos. Java, pocos minutos. Reserva ≈ 1 h y corre
+`caffeinate -i bash run_punto2.sh | tee results/log_punto2.txt` para que el Mac no se
+duerma y quede el registro de la corrida.
+
+**Reproducir en otra máquina.** La verificación de entorno está fijada al Mac de las
+mediciones del informe (valores `EXPECTED_*` en `scripts/entorno_medicion.sh`), así que en
+otro equipo `run_punto2.sh` aborta a propósito. Para comprobar que todo funciona allí:
+`bash run_punto2.sh --skip-env-check` (pruebas + corrida corta, salidas en un directorio
+temporal) y `bash run_punto1.sh --solo-pruebas`. Para medir de verdad en otro equipo, cambia
+los `EXPECTED_*` por los de esa máquina: sus números no serán comparables con los del informe.
 
 **Límite de 5 min en las posiciones.** Cada posición (`inicio`, `centro`, `centro_alto`,
 `final`) se predice por separado: tiempo de `claves` en 10⁶ × (pasos de una búsqueda en esa
