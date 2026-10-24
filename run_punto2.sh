@@ -6,6 +6,11 @@
 #   bash run_punto2.sh --skip-env-check   # SOLO pruebas en otra máquina (alias: --no-medir):
 #                                         # corrida corta (2 repeticiones, límite 5 s) y todas las
 #                                         # salidas a un directorio temporal; NO toca results/ ni figures/.
+#   bash run_punto2.sh --force            # medir de nuevo aunque ya existan results/busqueda_*.csv
+#
+# Duración de la corrida oficial: Python ≈ 40 min o más (lineal y variante entera en 10^6);
+# Java, pocos minutos. Reserva ≈ 1 h y usa `caffeinate -i bash run_punto2.sh` para que el
+# Mac no se duerma.
 # Recomendación (corrida oficial): cargador conectado, sin otros programas abiertos.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -13,9 +18,11 @@ source scripts/entorno_medicion.sh
 
 KEYS_SHA256="22fdc47fbcdd3e4b4d26fbcd3eae5010bb3becaa981337c9fe9fa41aaa0c965f"   # spec p2 6.1.1
 SKIP_ENV=0
+FORCE=0
 for arg in "$@"; do
   case "$arg" in
     --skip-env-check|--no-medir) SKIP_ENV=1 ;;
+    --force) FORCE=1 ;;
     *) echo "Argumento desconocido: $arg" >&2; exit 2 ;;
   esac
 done
@@ -23,6 +30,7 @@ done
 echo "== 0. Intérprete y entorno de medición =="
 require_venv
 echo "Python: $PY ($("$PY" --version 2>&1))"
+require_matplotlib                                   # antes de medir, no al final
 if [[ $SKIP_ENV -eq 1 ]]; then
   OUT_DIR="$(mktemp -d "${TMPDIR:-/tmp}/taller3_p2_prueba.XXXXXX")"
   JAVA_CSV="$OUT_DIR/prueba_busqueda_java.csv"
@@ -32,6 +40,8 @@ if [[ $SKIP_ENV -eq 1 ]]; then
   BENCH_ARGS_PY=(--reps 2 --limit 5)
   echo "AVISO: --skip-env-check -> corrida de PRUEBA (no oficial). Salidas en $OUT_DIR"
 else
+  refuse_overwrite "$FORCE" results/busqueda_java.csv results/busqueda_python.csv \
+                            results/entorno_busqueda_java.json results/entorno_busqueda_python.json
   check_measurement_env
   JAVA_CSV="results/busqueda_java.csv"
   PY_CSV="results/busqueda_python.csv"
@@ -61,8 +71,10 @@ echo "== 3. Pruebas del Punto 2 =="
 java -cp java/out taller3.tests.SearchSelfTest
 java -cp java/out taller3.tests.SearchBenchSelfTest
 java -cp java/out taller3.tests.SearchEquivalenceSelfTest
+java -cp java/out taller3.tests.SearchPredictionSelfTest
 (cd python && "$PY" -m unittest tests.test_searching tests.test_search_protocol \
-                                tests.test_search_equivalence tests.test_plot_search)
+                                tests.test_search_equivalence tests.test_plot_search \
+                                tests.test_search_prediction)
 
 echo "== 4. Benchmark Java (compilado) =="
 # Heap fijo de 2 GB como en el Punto 1. NO se cambia -Xss.

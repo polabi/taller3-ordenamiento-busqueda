@@ -60,8 +60,14 @@ Separación de responsabilidades (igual en ambos lenguajes):
 Requisitos: JDK 11 o superior, Python 3.9 o superior y `pip install matplotlib` (solo para las gráficas).
 
 ```bash
-bash run_punto1.sh            # datos, pruebas, Java, Python y gráficas
+bash run_punto1.sh                 # datos, pruebas, Java, Python y gráficas (solo en el Mac del Punto 1)
+bash run_punto1.sh --solo-pruebas  # datos, compilación y pruebas, sin medir (cualquier máquina)
+bash run_punto1.sh --force         # medir de nuevo aunque ya existan results/ordenamiento_*.csv
 ```
+
+Los resultados oficiales del Punto 1 ya están en `results/`. Sin `--force`, `run_punto1.sh`
+**no** los sobrescribe (ni `ordenamiento_*.csv` ni `entorno_{java,python}.json`), y antes
+de medir verifica el entorno y que matplotlib esté instalado, igual que `run_punto2.sh`.
 
 Paso a paso (desde la raíz):
 
@@ -90,20 +96,26 @@ Corridas parciales para depurar: `--sizes 1000,10000` (Java) / `--sizes 1000 100
 ```bash
 bash run_punto2.sh                    # corrida OFICIAL (solo en el Mac del Punto 1)
 bash run_punto2.sh --skip-env-check   # solo para probar en otra máquina (alias --no-medir)
+bash run_punto2.sh --force            # medir de nuevo aunque ya existan results/busqueda_*.csv
 ```
 
 `run_punto2.sh` hace: claves (las genera si faltan y verifica su SHA-256) → compilación →
 pruebas del Punto 2 (`SearchSelfTest`, `SearchBenchSelfTest`, `SearchEquivalenceSelfTest`,
-`test_searching`, `test_search_protocol`, `test_search_equivalence`, `test_plot_search`) →
+`SearchPredictionSelfTest`, `test_searching`, `test_search_protocol`,
+`test_search_equivalence`, `test_plot_search`, `test_search_prediction`) →
 benchmark Java (`-Xms2g -Xmx2g`) → benchmark Python → equivalencia Java ↔ Python, gráficas
 y tablas. Salidas: `results/busqueda_{java,python}.csv`, `results/entorno_busqueda_{java,python}.json`,
 `figures/p2_*`.
 
 **Dónde se mide.** Las mediciones oficiales (Puntos 1, 2 y 3) se hacen en el **mismo
 Mac del Punto 1** (macOS 26.6.2, 10 núcleos, Java 21.0.9, Python 3.9.6 del `.venv`), para
-que los resultados sean comparables. Antes de medir, `run_punto2.sh` compara el entorno
-actual con `results/entorno_java.json` y `results/entorno_python.json` y **aborta** si no
-coincide (`scripts/entorno_medicion.sh`, reutilizable por `run_punto3.sh`). Con
+que los resultados sean comparables. Antes de medir, `run_punto1.sh` y `run_punto2.sh`
+comparan el entorno actual con **valores fijos** (arm64, macOS 26.6.x, 10 núcleos,
+Java 21.0.9, Python 3.9.6 del `.venv`, matplotlib instalado) y **abortan** si no coincide
+(`scripts/entorno_medicion.sh`, reutilizable por `run_punto3.sh`; si solo cambia el parche
+de macOS, avisan y siguen). Ya no se compara contra `results/entorno_*.json`, que una
+corrida de `run_punto1.sh` podía reescribir. El modelo del Mac (`hw.model` y la CPU) queda
+registrado en `results/entorno_busqueda_{java,python}.json`. Con
 `--skip-env-check` no se verifica el entorno, pero la corrida es corta (2 repeticiones,
 límite de 5 s, que fuerza algunos estimados) y **todas** sus salidas van a un directorio
 temporal: nunca escribe en `results/` ni en `figures/`.
@@ -125,9 +137,17 @@ java -Xms2g -Xmx2g -cp java/out taller3.bench.SearchBenchmark --sizes 1000,10000
 Flags de los benchmarks: `--sizes`, `--algos`, `--variants` (`claves`, `inicio`, `centro`,
 `centro_alto`, `final`), `--reps`, `--limit`, `--out`. Con `--out X.csv` el entorno va a
 `entorno_X.json` junto al CSV (ojo: `results/entorno_prueba_*.json` no está en `.gitignore`).
-Duración estimada de la corrida oficial: Python ≈ 17 min solo para la variante de
-interpolación con división entera (spec 6.5); Java, por medir (una corrida de humo con
-2 repeticiones tardó ≈ 32 s en otro equipo).
+Duración estimada de la corrida oficial: el benchmark de Python puede tardar **≈ 40 min o
+más** (la lineal y la variante de interpolación con división entera recorren hasta 10⁶
+elementos por búsqueda; solo la variante suma ≈ 17 min según la estimación informal de la
+spec 6.5, medida con otro Python en otro equipo); Java, pocos minutos. Reserva ≈ 1 h y
+corre `caffeinate -i bash run_punto2.sh` para que el Mac no se duerma.
+
+**Límite de 5 min en las posiciones.** Cada posición (`inicio`, `centro`, `centro_alto`,
+`final`) se predice por separado: tiempo de `claves` en 10⁶ × (pasos de una búsqueda en esa
+posición / pasos medios por clave en `claves`), con los pasos contados de la spec 6.5. Así,
+si la pasada `final` de una búsqueda O(n) superara 300 s, solo esa quedaría estimada; `inicio`
+(1 paso) se mide siempre.
 
 ## 3. Datos de prueba: decisiones de diseño
 

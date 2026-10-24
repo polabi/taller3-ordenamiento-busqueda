@@ -45,7 +45,7 @@ import taller3.searching.SearchRegistry;
  *  1. Calentamiento GLOBAL del JIT: 10 pasadas por algoritmo sobre ascendente_10000 con el
  *     archivo de claves (como el Punto 1).
  *  2. Por caso: predicción (claves: t(n_prev)·f(n)/f(n_prev); posición: t_claves(10^6) x
- *     factor). Si supera 300 s -> estimado. Si no, calentamiento del caso (hasta 0,25 s o
+ *     factor de ESA posición, proporcional a su trabajo). Si supera 300 s -> estimado. Si no, calentamiento del caso (hasta 0,25 s o
  *     20 pasadas, omitido si la predicción supera 60 s) y 5 repeticiones.
  *  3. Cada pasada: System.gc() -> nanoTime -> out[j] = search(arr, keys[j]) -> nanoTime.
  *     Guardar cada resultado en out[] (que se usa después) impide que el JIT descarte las
@@ -64,7 +64,7 @@ public final class SearchBenchmark {
     private final Map<String, Double> clavesAt = new HashMap<>();         // "alg|n" -> promedio_ns
     private final Map<String, String> clavesAtEstado = new HashMap<>();   // "alg|n" -> medido/estimado
 
-    SearchBenchmark(int reps, double limitS) {
+    public SearchBenchmark(int reps, double limitS) {
         this.reps = reps;
         this.limitS = limitS;
         this.limitNs = limitS * 1e9;
@@ -90,16 +90,41 @@ public final class SearchBenchmark {
     }
 
     /**
-     * Factor de la predicción de las posiciones = costo de la pasada `final` / pasada `claves`
-     * (spec 6.5). Lineal: 10^9 / 748.440.213 = 1,336 ~ 4/3. Variante entera: 2. Resto: 4/3.
+     * Trabajo de cada algoritmo sobre ascendente_1000000.txt (spec 6.5; mismos valores que
+     * POSITION_WORK de bench_search.py): {pasos de la pasada `claves` completa, pasos de UNA
+     * búsqueda en inicio, centro, centro_alto, final}. Pasos = iteraciones del bucle principal.
+     * Factor de una posición = pasos(posición) / (pasos(claves) / 1.000): cada posición se
+     * predice proporcional a SU trabajo (en la lineal, inicio = 1 paso; final = 10^6).
+     * Ignora el costo fijo de cada llamada (subestima las posiciones baratas); solo decide si
+     * una pasada supera 300 s, y ahí el trabajo domina.
      */
-    static double positionFactor(String alg) {
-        if (alg.equals("InterpolationSearchIntDiv")) return 2.0;
-        return 4.0 / 3.0;
+    static final Map<String, long[]> POSITION_WORK = new HashMap<>();
+    static {
+        POSITION_WORK.put("LinearSearch",              new long[]{748_440_213L, 1, 500_000, 500_001, 1_000_000});
+        POSITION_WORK.put("BinarySearch",              new long[]{19_430, 19, 1, 19, 20});
+        POSITION_WORK.put("TernarySearch",             new long[]{12_582, 13, 12, 12, 13});
+        POSITION_WORK.put("JumpSearch",                new long[]{993_639, 2, 1_500, 502, 2_000});
+        POSITION_WORK.put("InterpolationSearch",       new long[]{4_079, 1, 3, 5, 1});
+        POSITION_WORK.put("ExponentialSearch",         new long[]{37_357, 1, 38, 33, 40});
+        POSITION_WORK.put("InterpolationSearchIntDiv", new long[]{504_349_278L, 1, 500_000, 500_001, 1_000_000});
     }
 
-    static String positionFactorText(String alg) {
-        return alg.equals("InterpolationSearchIntDiv") ? "2" : "4/3";
+    /** Factor de la predicción de UNA posición (spec 6.5); solo vale para n = 10^6. */
+    public static double positionFactor(String alg, String variante) {
+        long[] w = POSITION_WORK.get(alg);
+        if (w == null) throw new IllegalArgumentException("Sin trabajo por posición para " + alg);
+        int col = Arrays.asList(Config.POSITION_VARIANTS).indexOf(variante);
+        if (col < 0) throw new IllegalArgumentException("Variante de posición desconocida: '" + variante + "'");
+        double mean = (double) w[0] / Config.NUM_SEARCH_KEYS;
+        return w[1 + col] / mean;
+    }
+
+    static String positionFactorText(String alg, String variante) {
+        long[] w = POSITION_WORK.get(alg);
+        int col = Arrays.asList(Config.POSITION_VARIANTS).indexOf(variante);
+        double mean = (double) w[0] / Config.NUM_SEARCH_KEYS;
+        return w[1 + col] + "/" + g6(mean) + " = x" + g6(positionFactor(alg, variante))
+                + " (pasos de una búsqueda en " + variante + " / pasos medios por clave en claves)";
     }
 
     // ---------------------------------------------------------------- medición
@@ -116,14 +141,14 @@ public final class SearchBenchmark {
     }
 
     /** Oráculo independiente (Arrays.binarySearch de la biblioteca estándar): ¿está cada clave? */
-    static boolean[] presence(int[] arr, int[] keys) {
+    public static boolean[] presence(int[] arr, int[] keys) {
         boolean[] present = new boolean[keys.length];
         for (int j = 0; j < keys.length; j++) present[j] = Arrays.binarySearch(arr, keys[j]) >= 0;
         return present;
     }
 
     /** Verifica una pasada (fuera del tiempo) y devuelve {encontradas, checksum}. */
-    static long[] verifyPass(String name, String variant, int[] arr, int[] keys, boolean[] present, int[] out) {
+    public static long[] verifyPass(String name, String variant, int[] arr, int[] keys, boolean[] present, int[] out) {
         int n = arr.length;
         long found = 0;
         long checksum = 0;
@@ -182,19 +207,27 @@ public final class SearchBenchmark {
                             Estimator.describe(prev[1], n0, n, a.growth())};
     }
 
-    private Object[] predictPosition(SearchAlgorithm a, int n) {
-        double factor = positionFactor(a.name());
-        String factorTxt = positionFactorText(a.name());
+    /** Predicción de UNA posición: t_claves(n) x factor de esa posición (spec 6.5). */
+    public Object[] predictPosition(SearchAlgorithm a, String variant, int n) {
+        if (n != Config.POSITION_N) return null;          // POSITION_WORK se contó sobre 10^6
+        double factor = positionFactor(a.name(), variant);
+        String factorTxt = positionFactorText(a.name(), variant);
         Double base = clavesAt.get(a.name() + "|" + n);
         if (base == null) {                               // sin `claves` en este n: se extrapola
             Object[] pred = predictClaves(a, n);
             if (pred == null) return null;
-            return new Object[]{(double) pred[0] * factor,
-                                "[" + pred[1] + "] x " + factorTxt + " (pasada final / pasada claves)"};
+            return new Object[]{(double) pred[0] * factor, "[" + pred[1] + "] x " + factorTxt};
         }
         String estado = clavesAtEstado.get(a.name() + "|" + n);
-        return new Object[]{base * factor, String.format(Locale.ROOT, "t_claves(%d)=%s s (%s) x %s (pasada final / pasada claves)",
+        return new Object[]{base * factor, String.format(Locale.ROOT, "t_claves(%d)=%s s (%s) x %s",
                 n, g6(base / 1e9), estado, factorTxt)};
+    }
+
+    /** Registra un tiempo de `claves` como si se hubiera medido/estimado (lo usan las pruebas). */
+    public void recordClaves(String alg, int n, double promedioNs, String estado) {
+        clavesAt.put(alg + "|" + n, promedioNs);
+        clavesAtEstado.put(alg + "|" + n, estado);
+        if (estado.equals("medido")) lastMeasured.put(alg, new double[]{n, promedioNs});
     }
 
     /** 6 cifras significativas sin ceros sobrantes (como :.6g de Python y Estimator). */
@@ -205,13 +238,13 @@ public final class SearchBenchmark {
     }
 
     // --------------------------------------------------------------- un caso
-    SearchResultRecord runCase(SearchAlgorithm a, String variant, int[] arr, int[] keys,
+    public SearchResultRecord runCase(SearchAlgorithm a, String variant, int[] arr, int[] keys,
                                boolean[] present, Integer clave) {
         int n = arr.length;
         SearchResultRecord rec = new SearchResultRecord(a.name(), LANG, variant, n);
         rec.numBusquedas = keys.length;
         rec.clave = clave;
-        Object[] pred = variant.equals("claves") ? predictClaves(a, n) : predictPosition(a, n);
+        Object[] pred = variant.equals("claves") ? predictClaves(a, n) : predictPosition(a, variant, n);
         double predicted = pred == null ? -1 : (double) pred[0];
         if (predicted > limitNs) {
             rec.promedioNs = predicted;
@@ -409,6 +442,22 @@ public final class SearchBenchmark {
         }
     }
 
+    /** Valor de `sysctl -n name` (macOS); null si no existe (otra plataforma). */
+    static String sysctl(String name) {
+        try {
+            Process p = new ProcessBuilder("sysctl", "-n", name).redirectErrorStream(true).start();
+            String v = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();
+            return p.waitFor() == 0 && !v.isEmpty() ? v : null;
+        } catch (IOException e) {
+            return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
+    }
+
+    private static String qOrNull(String s) { return s == null ? "null" : q(s); }
+
     private static String q(String s) { return "\"" + s.replace("\\", "\\\\").replace("\"", "'") + "\""; }
 
     private static void writeEnvironment(Path path, int reps, double limit, String started, String keysSha,
@@ -426,6 +475,8 @@ public final class SearchBenchmark {
                 + "  \"so\": " + q(System.getProperty("os.name") + " " + System.getProperty("os.version")
                         + " (" + System.getProperty("os.arch") + ")") + ",\n"
                 + "  \"procesadores\": " + rt.availableProcessors() + ",\n"
+                + "  \"modelo\": " + qOrNull(sysctl("hw.model")) + ",\n"
+                + "  \"cpu\": " + qOrNull(sysctl("machdep.cpu.brand_string")) + ",\n"
                 + "  \"heap_max_mb\": " + rt.maxMemory() / (1024 * 1024) + ",\n"
                 + "  \"argumentos_jvm\": " + q(String.join(" ", ManagementFactory.getRuntimeMXBean().getInputArguments())) + ",\n"
                 + "  \"reloj\": \"System.nanoTime()\",\n"

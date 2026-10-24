@@ -644,10 +644,11 @@ Estas pruebas informales se hicieron en la máquina de desarrollo; no entran al 
 - Las mediciones **oficiales** del P3 (las que entran al informe) se corren en el **Mac
   del P1** (`~/Downloads/taller3`, con `.venv` de Python 3.9.6 + matplotlib), para que
   sean comparables con `results/ordenamiento_*.csv` y `results/busqueda_*.csv`.
-- Antes de medir se verifica el entorno contra `results/entorno_{java,python}.json` del
-  P1: macOS 26.6.2 (`so` = "Mac OS X 26.6.2 (aarch64)" / `plataforma` =
-  "macOS-26.6.2-arm64-…"), 10 núcleos (`procesadores`), Java 21.0.9, Python 3.9.6. Si
-  algo no coincide, la corrida **aborta** con un mensaje que diga qué difiere.
+- Antes de medir se verifica el entorno contra los **valores fijos** del Mac del P1
+  (corrección B de la auditoría del P2, 2026-10-23; antes se leían de
+  `results/entorno_{java,python}.json`, que una corrida de `run_punto1.sh` podía
+  reescribir): macOS 26.6.x en arm64, 10 núcleos, Java 21.0.9, Python 3.9.6. Si algo no
+  coincide, la corrida **aborta** con un mensaje que diga qué difiere (`scripts/entorno_medicion.sh`).
 - En la máquina de desarrollo solo se corren pruebas de corrección (y corridas parciales
   con `--out results/prueba_*.csv`); **nada** de lo medido allí entra al informe.
 - `run_punto3.sh` usa `.venv/bin/python` (no `python3` del sistema) y **reutiliza** el
@@ -660,8 +661,9 @@ Estas pruebas informales se hicieron en la máquina de desarrollo; no entran al 
 
 Python = `.venv/bin/python` de la raíz (6.5), escrito abajo como `$PY`.
 
-0. Verificación de entorno con el helper del P2 (6.5); aborta si no coincide con
-   `results/entorno_{java,python}.json`.
+0. Verificación de entorno con el helper del P2 (`source scripts/entorno_medicion.sh`,
+   `require_venv`, `require_matplotlib`, `check_measurement_env`); aborta si no coincide
+   con los valores fijos de 6.5.
 1. `(cd python && $PY -m taller3.generate_data)` — genera `data/p3/` si falta.
 2. `rm -rf java/out && javac -encoding UTF-8 -d java/out $(find java/src -name "*.java")`
 3. `java -cp java/out taller3.tests.SupuestosSelfTest` y

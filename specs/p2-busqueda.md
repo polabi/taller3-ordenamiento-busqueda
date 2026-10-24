@@ -815,17 +815,40 @@ difiere de esta tabla (indicaría desviación del pseudocódigo no detectada por
 - `claves`: antes de cada n se predice `t(n_prev)·f(n)/f(n_prev)` con el mayor n medido;
   si supera 300 s → `estado = estimado` con `base_estimacion` (mismo formato que el Punto 1).
   Si una repetición supera el límite, se detienen las restantes (como en el Punto 1).
-- Posiciones (solo n = 10⁶): predicción = promedio_total de `claves` del mismo algoritmo a
-  n = 10⁶ × factor, con factor = costo de la pasada `final` / costo de la pasada `claves`
-  (el mismo factor, conservador, para las cuatro posiciones). Constantes en el benchmark
-  (no en `config`):
-  - Lineal: **4/3** (`final` = 10⁹ comparaciones frente a 748.440.213 en `claves`:
-    10⁹ / 748.440.213 = 1,336 ≈ 4/3).
-  - Interpolación div. entera: **2** (`final` ≈ 10⁹ iteraciones; en `claves` presentes y
-    ausentes cuestan ≈ su posición ≈ n/2 en promedio).
-  - Resto: 4/3 (irrelevante: sus tiempos son de µs).
-  Si la predicción supera 300 s → estimado; si `claves` a 10⁶ quedó estimada, la
-  predicción usa ese valor estimado.
+- Posiciones (solo n = 10⁶) — **corregido 2026-10-23 (auditoría, hallazgo A)**: cada
+  posición se predice y decide **por separado**, con un factor **proporcional a su
+  trabajo**:
+
+  `predicción(posición) = promedio_total de claves del mismo algoritmo a 10⁶ × pasos(posición) / (pasos(claves) / 1.000)`
+
+  Antes se usaba un solo factor (el de `final`) para las cuatro columnas; con eso, si la
+  pasada `final` de la lineal superaba 300 s, también `inicio` (1 comparación) quedaba
+  "estimada" con el tiempo de `final`, lo que es falso. Ahora, en la lineal, `inicio` se
+  predice ≈ 1/748.440 de `claves` y siempre se mide; solo la posición cara puede quedar
+  estimada.
+
+  Pasos = iteraciones del bucle principal, contadas ejecutando el pseudocódigo sobre
+  `ascendente_1000000.txt` (2026-10-23; coinciden con la tabla de 6.2). Constantes
+  `POSITION_WORK` en `bench_search.py` y `SearchBenchmark.java` (no en `config`):
+
+  | Algoritmo | pasos de la pasada `claves` | inicio | centro | centro_alto | final |
+  |---|---|---|---|---|---|
+  | Lineal | 748.440.213 | 1 | 500.000 | 500.001 | 1.000.000 |
+  | Binaria | 19.430 | 19 | 1 | 19 | 20 |
+  | Ternaria | 12.582 | 13 | 12 | 12 | 13 |
+  | Saltos | 993.639 | 2 | 1.500 | 502 | 2.000 |
+  | Interpolación oficial | 4.079 | 1 | 3 | 5 | 1 |
+  | Exponencial (incluye la revisión de `arr[0]`) | 37.357 | 1 | 38 | 33 | 40 |
+  | Interpolación div. entera (incluye la guarda final) | 504.349.278 | 1 | 500.000 | 500.001 | 1.000.000 |
+
+  Ejemplos de factor: lineal `final` = 1.000.000 / 748.440,213 = ×1,336; lineal `centro`
+  = ×0,668; lineal `inicio` = ×1,34·10⁻⁶; variante entera `final` = ×1,983.
+  El factor ignora el costo fijo de cada llamada, así que **subestima** las posiciones
+  baratas; no importa, porque solo decide si una pasada supera 300 s y en ese rango el
+  trabajo domina. `base_estimacion` registra `t_claves(10⁶)`, su estado y el cociente de
+  pasos. Si `claves` a 10⁶ quedó estimada, la predicción usa ese valor estimado; si no se
+  corrió `claves` en 10⁶, se extrapola desde el mayor n medido. Para n ≠ 10⁶ no hay
+  predicción de posición (no se corren).
 - Expectativa: la **lineal y la variante entera en 10⁶ sí deben medirse** en ambos
   lenguajes. Órdenes de magnitud de pruebas informales (no son datos del informe):
   - Lineal, Python: ≈ 9 ms por búsqueda ausente en 10⁶ → ≈ 7 s por pasada de `claves` y
@@ -834,6 +857,12 @@ difiere de esta tabla (indicaría desviación del pseudocódigo no detectada por
     `claves` en 10⁶ ≈ **40 s**; `centro`/`centro_alto` ≈ 40 s; `final` ≈ **81 s** por
     pasada. Todas < 300 s → se miden, pero suman ≈ **17 min** al benchmark de Python
     (5 × (40 + 40 + 40 + 81) s). En Java se espera del orden de segundos (*por medir*).
+  - **Duración total (corregido 2026-10-23, auditoría, hallazgo C):** esos órdenes vienen
+    de pruebas informales en otro equipo y con otro Python. Con Python 3.9.6 la corrida
+    completa del benchmark de Python (lineal + variante entera en los 4 tamaños y las 4
+    posiciones, más el resto) puede tardar **≈ 40 min o más**; reservar ≈ 1 h para
+    `run_punto2.sh`. Si en esa máquina la pasada `final` de la variante entera supera
+    300 s, queda estimada (solo esa posición; ver arriba).
   - El mecanismo de estimación existe por la regla del taller; con estos órdenes no
     debería activarse, pero si la máquina de la corrida es ≈ 4× más lenta, la pasada
     `final` de la variante entera en Python sí podría superar 300 s y quedaría estimada.
@@ -845,12 +874,27 @@ difiere de esta tabla (indicaría desviación del pseudocódigo no detectada por
 ### 6.6 Entorno de medición (nota, 2026-10-22)
 
 Las mediciones oficiales se corren en el Mac del P1 (`~/Downloads/taller3`, `.venv` con
-Python 3.9.6 + matplotlib), verificando antes contra `results/entorno_{java,python}.json`
-(macOS 26.6.2, 10 núcleos, Java 21.0.9, Python 3.9.6) y abortando si no coincide. En la
-máquina de desarrollo solo pruebas de corrección; nada de lo medido allí entra al informe.
-`run_punto2.sh` usa `.venv/bin/python` y llama a un helper de verificación de entorno
-reutilizable por el P3 (nombre y ruta a definir por el implementador del P2, p. ej.
-`scripts/check_env.sh`).
+Python 3.9.6 + matplotlib). En la máquina de desarrollo solo pruebas de corrección; nada de
+lo medido allí entra al informe.
+
+Verificación (corregida 2026-10-23, auditoría, hallazgo B): `scripts/entorno_medicion.sh`
+compara contra **valores fijos** —no contra `results/entorno_*.json`, que una corrida de
+`run_punto1.sh` podía reescribir—:
+
+| Qué | Valor exigido | Si difiere |
+|---|---|---|
+| Arquitectura (`uname -m`) | `arm64` | aborta |
+| macOS (`sw_vers -productVersion`) | `26.6.x` | aborta si cambia 26.6; **solo avisa** si cambia el parche (x ≠ 2) |
+| Núcleos (`sysctl -n hw.ncpu`) | 10 | aborta |
+| Java (`java.version`) | 21.0.9 | aborta |
+| Python del `.venv` | 3.9.6 | aborta |
+| matplotlib en el `.venv` | importable | aborta (antes de medir, no al final) |
+
+Lo usan `run_punto1.sh`, `run_punto2.sh` y `run_punto3.sh` (`require_venv`,
+`require_matplotlib`, `check_measurement_env`). Además ninguno sobrescribe resultados
+oficiales existentes (`results/ordenamiento_*.csv`, `results/busqueda_*.csv` y sus
+`entorno_*.json`) sin `--force`. El modelo del equipo (`hw.model`,
+`machdep.cpu.brand_string`) se registra en `entorno_busqueda_{java,python}.json`.
 
 ## 7. Salidas — APROBADA (2026-10-22)
 
@@ -926,7 +970,8 @@ Exigidas por el enunciado:
    x = n, y = tiempo promedio por búsqueda (µs), **log-log**, una línea por algoritmo, solo
    `variante = claves`; puntos estimados con línea punteada y marcador distinto.
    **Línea extra** para `InterpolationSearchIntDiv`, marcada como variante: estilo
-   raya-punto (`-.`), mismo color que "Interpolación" en tono más claro, leyenda
+   raya-punto (`-.`), mismo color que "Interpolación" en tono **más oscuro** (corregido
+   2026-10-23: el tono claro casi no se veía), leyenda
    "Interpolación (división entera, GfG Java) — variante". (El punteado `:` queda
    reservado para estimados.)
 3. `figures/p2_java_vs_python_n1000000.png`: barras, n = 10⁶, `claves`, dos barras por
@@ -940,7 +985,8 @@ Exigidas por el enunciado:
      (tiempo promedio por búsqueda en ns, `%.1f`; `estimados` = lista separada por `;` de
      las variantes con `estado = estimado`, vacía si ninguna).
    - `.md`: columnas `Algoritmo | inicio (0) | centro (499.999) | centro (500.000) |
-     final (999.999)`, valores en µs con 3 cifras significativas, prefijo `~` si es
+     final (999.999)`, valores con 3 cifras significativas **y su unidad en cada celda**
+     (µs, ms o s; corregido 2026-10-23: "18.100 µs" se leía como 18,1 µs), prefijo `~` si es
      estimado; nota al pie remitiendo al artefacto del centro (6.2).
    - **Pie de la tabla (obligatorio, `.md` y la tabla del informe)**, aprobado 2026-10-22:
      declarar qué índice se usó como cada centro y por qué difieren, p. ej.:
@@ -955,7 +1001,9 @@ De apoyo (como en el Punto 1):
 
 - `figures/p2_razones_crecimiento.csv`:
   `lenguaje,algoritmo,complejidad,n_desde,n_hasta,razon_observada,razon_teorica`
-  (t(10n)/t(n) de `promedio_por_busqueda_ns`, `claves`; teórica de 3.7).
+  (t(10n)/t(n) de `promedio_por_busqueda_ns`, `claves`; teórica de 3.7). Solo entre dos
+  puntos **medidos** (corregido 2026-10-23): con un estimado la razón observada sería la
+  teórica por construcción.
 - `figures/p2_resumen.csv`:
   `lenguaje,algoritmo,variante,n,promedio_ns,desv_estandar_ns,cv,promedio_por_busqueda_ns,estado`
   (`cv` = desv / promedio).
@@ -1229,6 +1277,15 @@ las claves: python3 -m taller3.generate_data" (no se salta: el archivo estará v
 | Índices del centro en el informe | **APROBADO**: pie obligatorio en la tabla de posición (7.3) y pregunta de análisis (§9). |
 | Banda de sensibilidad del Punto 3 | **APROBADA** como aproximación; se documenta en `p3-comparativo.md`. |
 
+### 10.4 Correcciones de la auditoría del 2026-10-23
+
+| Hallazgo | Resolución |
+|---|---|
+| A. Factor único de posición | **Corregido**: factor por posición proporcional al trabajo, con la tabla de pasos de 6.5; cada posición decide medir o estimar por separado. |
+| B. Entorno | **Corregido**: `scripts/entorno_medicion.sh` compara contra valores **fijos** (macOS 26.6.x en arm64, 10 núcleos, Java 21.0.9, Python 3.9.6) y lo usan `run_punto1.sh` y `run_punto2.sh`; ninguno sobrescribe los resultados oficiales sin `--force`. El modelo del Mac (`hw.model`, `machdep.cpu.brand_string`) queda en `entorno_busqueda_*.json`. |
+| C. Duración | **Corregido**: Python ≈ 40 min o más (6.5 y README). |
+| Menores | matplotlib se comprueba antes de medir; razones de crecimiento solo entre puntos medidos; valores de las tablas de posición con su unidad (µs/ms/s) en vez de "18.100 µs"; color de la variante oscurecido; 3 pruebas nuevas (verificación de cada pasada, camino de los estimados, predicción por posición) en Python y Java. |
+
 ## 11. Preguntas abiertas
 
 Resueltas el 2026-10-22 (ver 10.3): prueba 8.5 (rediseñada con oráculo independiente),
@@ -1248,5 +1305,6 @@ Pendientes:
 - ¿Se quiere también la mediana en `p2_resumen.csv`? El taller pide promedio y
   desviación; la mediana sería solo informativa.
 - Costo de tiempo de la variante entera: ≈ 17 min más en el benchmark de Python
-  (estimación informal, 6.5). Para depurar se puede excluir con `--algos`; en la corrida
+  según la estimación informal de 6.5; la corrida completa de Python puede tardar
+  ≈ 40 min o más (corrección C del 2026-10-23). Para depurar se puede excluir con `--algos`; en la corrida
   oficial (`run_punto2.sh`) se incluye.

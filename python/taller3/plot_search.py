@@ -19,8 +19,9 @@ Genera (spec 7.3; eje de tiempo logarítmico, estimados dibujados distinto):
   p2_razones_crecimiento.csv, p2_resumen.csv            tablas de apoyo
 
 Convención visual: línea continua = medido; línea PUNTEADA (:) con marcador hueco =
-estimado; RAYA-PUNTO (-.) en tono claro = variante InterpolationSearchIntDiv (no es uno de
-los 6 del enunciado). Barras estimadas: rayadas, más claras y con "~" en la etiqueta.
+estimado; RAYA-PUNTO (-.) en tono OSCURO del color de Interpolación = variante
+InterpolationSearchIntDiv (no es uno de los 6 del enunciado; el tono claro se confundía con
+el fondo y con las barras estimadas). Barras estimadas: rayadas, más claras y con "~" en la etiqueta.
 
 matplotlib se importa SOLO dentro de las funciones que grafican: las comprobaciones se
 pueden importar y probar sin la librería de gráficas.
@@ -227,10 +228,16 @@ def lighten(hex_color: str, amount: float = 0.55) -> tuple[float, float, float]:
     return (r + (1 - r) * amount, g + (1 - g) * amount, b + (1 - b) * amount)
 
 
-# Paleta categórica del Punto 1 (orden fijo); la variante usa el color de Interpolación aclarado.
+def darken(hex_color: str, amount: float = 0.4) -> tuple[float, float, float]:
+    h = hex_color.lstrip("#")
+    r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    return (r * (1 - amount), g * (1 - amount), b * (1 - amount))
+
+
+# Paleta categórica del Punto 1 (orden fijo); la variante usa el color de Interpolación oscurecido.
 PALETTE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300"]
 ALGO_COLOR = {a: PALETTE[i] for i, a in enumerate(OFFICIAL)}
-ALGO_COLOR[VARIANT_ALGO] = lighten(ALGO_COLOR["InterpolationSearch"])
+ALGO_COLOR[VARIANT_ALGO] = darken(ALGO_COLOR["InterpolationSearch"])
 LANG_COLOR = {"Java": PALETTE[0], "Python": PALETTE[1]}
 INK = "#0b0b0b"
 INK_2 = "#52514e"
@@ -454,13 +461,14 @@ def write_position_tables(idx: dict, lang: str, n: int, out_dir: Path) -> None:
                 if ns is None:
                     cells_md.append("—")
                 else:
-                    cells_md.append(("~" if r["estado"] == "estimado" else "") + fmt_sig3(ns / 1e3))
+                    # Con unidad en cada celda (µs/ms/s): "18.100 µs" se leía como 18,1 µs.
+                    cells_md.append(("~" if r["estado"] == "estimado" else "") + fmt_us(ns / 1e3))
             w.writerow([a, label] + cells_csv + [";".join(est)])
             md.append(f"| {label} | " + " | ".join(cells_md) + " |")
     reps = max((sum(1 for c in r if c.startswith("rep_") and r[c]) for k, r in idx.items()
                 if k[0] == lang and k[3] == n and r["estado"] == "medido"), default=0)
     md += ["",
-           f"Tiempo promedio por búsqueda en µs (3 cifras significativas), {lang}, n = {fmt_n(n)}, "
+           f"Tiempo promedio por búsqueda (3 cifras significativas, unidad en cada celda), {lang}, n = {fmt_n(n)}, "
            f"{fmt_n(config.NUM_SEARCH_KEYS)} búsquedas de la misma clave por pasada, promedio de "
            f"{reps} pasadas. "
            f"`~` = estimado (no ejecutado).",
@@ -494,6 +502,8 @@ def write_summary(rows: list[dict[str, str]], out: Path) -> None:
 
 
 def write_growth_ratios(idx: dict, out: Path) -> None:
+    """t(10n)/t(n) solo entre puntos MEDIDOS: con un estimado la razón observada sería la
+    teórica (el estimado se calculó con ella) y no aportaría evidencia."""
     sizes = list(config.SIZES)
     with open(out, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
@@ -503,8 +513,10 @@ def write_growth_ratios(idx: dict, out: Path) -> None:
             for a in ALGOS:
                 g = GROWTH[a]
                 for n0, n1 in zip(sizes, sizes[1:]):
-                    t0 = per_search_us(idx.get((lang, a, "claves", n0)))
-                    t1 = per_search_us(idx.get((lang, a, "claves", n1)))
+                    r0, r1 = idx.get((lang, a, "claves", n0)), idx.get((lang, a, "claves", n1))
+                    if r0 is None or r1 is None or "medido" != r0["estado"] or "medido" != r1["estado"]:
+                        continue
+                    t0, t1 = per_search_us(r0), per_search_us(r1)
                     if not t0 or not t1:
                         continue
                     w.writerow([lang, a, g.value, n0, n1, f"{t1 / t0:.3f}", f"{g.f(n1) / g.f(n0):.3f}"])

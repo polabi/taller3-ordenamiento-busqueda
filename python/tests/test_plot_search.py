@@ -416,5 +416,43 @@ class TestPlausibilityWarnings(unittest.TestCase):
             self.assertTrue(any(alg in a for a in avisos), f"falta aviso de {alg}: {avisos}")
 
 
+class TestTablasDeApoyo(unittest.TestCase):
+    """Correcciones menores de la auditoría (2026-10-23): razones solo entre medidos y
+    unidad explícita en las tablas de posición."""
+
+    def _idx(self, rows):
+        return {(r["lenguaje"], r["algoritmo"], r["variante"], int(r["n"])): r for r in rows}
+
+    def test_7_3_razones_de_crecimiento_omiten_estimados(self):
+        import csv as _csv
+        import tempfile
+        from pathlib import Path
+        ps = importlib.import_module("taller3.plot_search")
+        rows = full_csv("Python")
+        replace(rows, make_row("LinearSearch", "Python", "claves", 1_000_000, 9_000_000.0,
+                               estado="estimado"))
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "razones.csv"
+            ps.write_growth_ratios(self._idx(rows), out)
+            got = list(_csv.DictReader(open(out, encoding="utf-8")))
+        lin = [(r["n_desde"], r["n_hasta"]) for r in got if r["algoritmo"] == "LinearSearch"]
+        self.assertEqual(lin, [("1000", "10000"), ("10000", "100000")])   # sin 10^5 -> 10^6
+        self.assertTrue(any(r["algoritmo"] == "BinarySearch" and r["n_hasta"] == "1000000"
+                            for r in got))
+
+    def test_7_3_tabla_de_posicion_con_unidad_en_cada_celda(self):
+        import tempfile
+        from pathlib import Path
+        ps = importlib.import_module("taller3.plot_search")
+        rows = full_csv("Python")
+        replace(rows, make_row("LinearSearch", "Python", "final", 1_000_000, 18_100_000.0,
+                               estado="estimado"))
+        with tempfile.TemporaryDirectory() as d:
+            ps.write_position_tables(self._idx(rows), "Python", 1_000_000, Path(d))
+            md = (Path(d) / "p2_posicion_python.md").read_text(encoding="utf-8")
+        self.assertIn("~18,1 ms", md)
+        self.assertNotIn("18.100", md)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -15,7 +15,10 @@ Experimentos (spec p2 6.2), en este orden para cada n ascendente:
 Por cada caso:
   - Predicción del tiempo de una pasada; si supera el límite (300 s) -> ESTIMADO.
       claves:    t(n_prev)·f(n)/f(n_prev) con el mayor n medido (como el Punto 1).
-      posición:  t(claves, n=10^6) x factor (costo de la pasada `final` / pasada `claves`).
+      posición:  t(claves, n=10^6) x factor DE ESA POSICIÓN = pasos de una búsqueda en la
+                 posición / pasos medios por clave en `claves` (POSITION_WORK). Cada posición
+                 decide por sí sola: en la lineal `inicio` (1 paso) se mide aunque `final`
+                 (10^6 pasos) quede estimada.
   - Si no, 5 repeticiones con time_searches (gc.collect antes, gc.disable durante).
   - Cada pasada se verifica FUERA del tiempo contra un oráculo independiente (bisect):
     out[j] == -1 <=> la clave no está; si no, arr[out[j]] == clave. encontradas y
@@ -29,7 +32,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
+import subprocess
 import sys
 import time
 from bisect import bisect_left, bisect_right
@@ -46,13 +51,36 @@ from taller3.searching import BY_NAME, SEARCHES, SearchSpec
 
 LANG = "Python"
 
-# Factor de la predicción de las posiciones = costo de la pasada `final` / costo de la
-# pasada `claves` (spec 6.5). El mismo factor, conservador, para las cuatro posiciones.
-#   Lineal: final = 10^9 comparaciones; claves = 748.440.213 -> 1,336 ~ 4/3.
-#   Interpolación div. entera: final ~ 10^9 iteraciones; claves ~ n/2 por clave -> 2.
-#   Resto: 4/3 (irrelevante: sus pasadas duran microsegundos).
-POSITION_FACTOR = {"LinearSearch": (4 / 3, "4/3"), "InterpolationSearchIntDiv": (2.0, "2")}
-DEFAULT_POSITION_FACTOR = (4 / 3, "4/3")
+# Trabajo de cada algoritmo sobre ascendente_1000000.txt (spec 6.5), contado ejecutando el
+# pseudocódigo: pasos = iteraciones del bucle principal (lineal: comparaciones; saltos:
+# comparaciones del salto + del paso lineal; exponencial: arr[0] + duplicaciones + binaria).
+#   (pasos de la pasada `claves` completa (1.000 claves), {posición: pasos de UNA búsqueda})
+# El factor de una posición es  pasos(posición) / (pasos(claves) / 1.000):  el tiempo de la
+# pasada de posición se predice proporcional a su trabajo, no con un factor único.
+# El factor ignora el costo fijo de cada llamada, así que subestima las posiciones baratas;
+# no importa: solo decide si una pasada supera 300 s, y ahí el trabajo domina.
+POSITION_WORK: dict[str, tuple[int, dict[str, int]]] = {
+    "LinearSearch":              (748_440_213, {"inicio": 1, "centro": 500_000,
+                                                "centro_alto": 500_001, "final": 1_000_000}),
+    "BinarySearch":              (19_430, {"inicio": 19, "centro": 1, "centro_alto": 19, "final": 20}),
+    "TernarySearch":             (12_582, {"inicio": 13, "centro": 12, "centro_alto": 12, "final": 13}),
+    "JumpSearch":                (993_639, {"inicio": 2, "centro": 1_500, "centro_alto": 502,
+                                            "final": 2_000}),
+    "InterpolationSearch":       (4_079, {"inicio": 1, "centro": 3, "centro_alto": 5, "final": 1}),
+    "ExponentialSearch":         (37_357, {"inicio": 1, "centro": 38, "centro_alto": 33, "final": 40}),
+    "InterpolationSearchIntDiv": (504_349_278, {"inicio": 1, "centro": 500_000,
+                                                "centro_alto": 500_001, "final": 1_000_000}),
+}
+
+
+def position_factor(algoritmo: str, variante: str) -> tuple[float, str]:
+    """(factor, texto) de la predicción de una posición (spec 6.5); solo vale para n = 10^6."""
+    total, per_search = POSITION_WORK[algoritmo]
+    mean = total / config.NUM_SEARCH_KEYS
+    steps = per_search[variante]
+    factor = steps / mean
+    return factor, (f"{steps}/{mean:.6g} = x{factor:.6g} (pasos de una búsqueda en {variante} / "
+                    f"pasos medios por clave en claves)")
 
 
 def position_index(variante: str, n: int) -> int:
@@ -128,25 +156,28 @@ class SearchBenchmark:
         n0, t0 = prev
         return extrapolate(t0, n0, n, spec.growth), describe(t0, n0, n, spec.growth)
 
-    def predict_position(self, spec: SearchSpec, n: int) -> tuple[float, str] | None:
-        factor, factor_txt = POSITION_FACTOR.get(spec.name, DEFAULT_POSITION_FACTOR)
+    def predict_position(self, spec: SearchSpec, variant: str, n: int) -> tuple[float, str] | None:
+        """Predicción de UNA posición: t_claves(n) x factor de esa posición (spec 6.5)."""
+        if n != config.POSITION_N:                    # POSITION_WORK se contó sobre 10^6
+            return None
+        factor, factor_txt = position_factor(spec.name, variant)
         base = self.claves_at.get((spec.name, n))
         if base is None:                              # sin `claves` en este n: se extrapola
             pred = self.predict_claves(spec, n)
             if pred is None:
                 return None
             t, txt = pred
-            return t * factor, f"[{txt}] x {factor_txt} (pasada final / pasada claves)"
+            return t * factor, f"[{txt}] x {factor_txt}"
         t, estado = base
-        return t * factor, (f"t_claves({n})={t / 1e9:.6g} s ({estado}) x {factor_txt} "
-                            f"(pasada final / pasada claves)")
+        return t * factor, f"t_claves({n})={t / 1e9:.6g} s ({estado}) x {factor_txt}"
 
     # -- un caso --------------------------------------------------------------
     def run_case(self, spec: SearchSpec, variant: str, arr: list[int],
                  keys: list[int], present: list[bool], clave: int | None) -> SearchResultRecord:
         n = len(arr)
         rec = SearchResultRecord(spec.name, LANG, variant, n, num_busquedas=len(keys), clave=clave)
-        pred = self.predict_claves(spec, n) if variant == "claves" else self.predict_position(spec, n)
+        pred = (self.predict_claves(spec, n) if variant == "claves"
+                else self.predict_position(spec, variant, n))
         if pred is not None and pred[0] > self.limit_ns:
             rec.promedio_ns = pred[0]
             rec.estado = "estimado"
@@ -197,6 +228,16 @@ def clock_resolution_ns(samples: int = 1000) -> int:
     return best
 
 
+def sysctl(name: str) -> str | None:
+    """Valor de `sysctl -n name` (macOS); None si no existe (otra plataforma)."""
+    try:
+        out = subprocess.run(["sysctl", "-n", name], capture_output=True, text=True, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    value = out.stdout.strip()
+    return value if out.returncode == 0 and value else None
+
+
 def write_environment(path: Path, args: argparse.Namespace, started: str, keys_sha: str,
                       resolution_ns: int) -> None:
     info = {
@@ -205,6 +246,9 @@ def write_environment(path: Path, args: argparse.Namespace, started: str, keys_s
         "version": sys.version,
         "plataforma": platform.platform(),
         "procesador": platform.processor() or platform.machine(),
+        "modelo": sysctl("hw.model"),                         # p. ej. "Mac15,6" (identifica el equipo)
+        "cpu": sysctl("machdep.cpu.brand_string"),             # p. ej. "Apple M3 Pro"
+        "nucleos": os.cpu_count(),
         "reloj": "time.perf_counter_ns()",
         "resolucion_reloj_ns": resolution_ns,
         "gc": "gc.collect() antes y gc.disable() durante cada pasada (como timeit)",
