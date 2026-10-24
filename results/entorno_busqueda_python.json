@@ -1,0 +1,42 @@
+{
+  "lenguaje": "Python",
+  "implementacion": "CPython",
+  "version": "3.9.6 (default, Apr  7 2026, 02:38:40) \n[Clang 21.0.0 (clang-2100.0.123.102)]",
+  "plataforma": "macOS-26.6.2-arm64-arm-64bit",
+  "procesador": "arm",
+  "modelo": "Mac17,2",
+  "cpu": "Apple M5",
+  "nucleos": 10,
+  "reloj": "time.perf_counter_ns()",
+  "resolucion_reloj_ns": 41,
+  "gc": "gc.collect() antes y gc.disable() durante cada pasada (como timeit)",
+  "claves": "claves_busqueda.txt",
+  "claves_sha256": "22fdc47fbcdd3e4b4d26fbcd3eae5010bb3becaa981337c9fe9fa41aaa0c965f",
+  "num_busquedas": 1000,
+  "repeticiones": 5,
+  "limite_s": 300,
+  "tamanos": [
+    1000,
+    10000,
+    100000,
+    1000000
+  ],
+  "algoritmos": [
+    "LinearSearch",
+    "BinarySearch",
+    "TernarySearch",
+    "JumpSearch",
+    "InterpolationSearch",
+    "ExponentialSearch",
+    "InterpolationSearchIntDiv"
+  ],
+  "variantes": [
+    "claves",
+    "inicio",
+    "centro",
+    "centro_alto",
+    "final"
+  ],
+  "inicio_utc": "2026-10-24T01:37:15+00:00",
+  "fin_utc": "2026-10-24T02:13:17+00:00"
+}

@@ -1,0 +1,8 @@
+algoritmo,etiqueta,inicio_ns,centro_ns,centro_alto_ns,final_ns,estimados
+LinearSearch,Lineal,2.7,50720.7,50928.0,102214.1,
+BinarySearch,Binaria,21.4,2.7,22.5,23.4,
+TernarySearch,Ternaria,24.9,24.7,24.3,24.6,
+JumpSearch,Saltos,3.1,554.0,264.6,841.1,
+InterpolationSearch,Interpolación,3.2,7.2,13.8,3.4,
+ExponentialSearch,Exponencial,12.9,32.2,22.8,33.1,
+InterpolationSearchIntDiv,"Interpolación (división entera, GfG Java) (variante)",3.0,1718728.2,1746303.9,3479222.5,

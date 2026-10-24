@@ -1,0 +1,146 @@
+== 0. Intérprete y entorno de medición ==
+Python: /Users/santiagopolaniapinzon/Downloads/taller3/.venv/bin/python (Python 3.9.6)
+Entorno exigido: arch=arm64 macOS=26.6.2 nucleos=10 java=21.0.9 python=3.9.6
+Entorno actual:  arch=arm64 macOS=26.6.2 nucleos=10 java=21.0.9 python=3.9.6
+Equipo:          Mac17,2 / Apple M5
+== 1. Claves de búsqueda (solo se generan si no existen; si existen se verifica su SHA-256) ==
+Los datos ya existen en /Users/santiagopolaniapinzon/Downloads/taller3/data (12 archivos).
+Los datos se generan una sola vez; para regenerarlos hay que pasar --force.
+Las claves ya existen y su SHA-256 coincide con el manifiesto: /Users/santiagopolaniapinzon/Downloads/taller3/data/claves_busqueda.txt
+SHA-256 de las claves OK (22fdc47fbcdd3e4b4d26fbcd3eae5010bb3becaa981337c9fe9fa41aaa0c965f)
+== 2. Compilación Java ==
+== 3. Pruebas del Punto 2 ==
+OK: 847 comprobaciones superadas (7 algoritmos x 39 casos a mano + searchRange + aleatorio 5.7)
+OK: 43 comprobaciones de protocolo superadas
+OK: 32 comprobaciones de equivalencia 8.5 superadas (partes A y C)
+OK: 59 comprobaciones de predicción/estimación/verificación superadas
+== 4. Benchmark Java (compilado) ==
+[Java] OpenJDK 64-Bit Server VM 21.0.9 | reps=5 | límite=300 s | resolución del reloj ≈ 41 ns | salida: results/busqueda_java.csv
+[Java] Calentamiento global: 10 pasadas x 7 algoritmos, n=10,000 ascendente...
+  n=    1,000  LinearSearch              claves            117.0 ns ± 1.4 ns /búsq.  medido
+  n=    1,000  BinarySearch              claves            27.3 ns ± 14.0 ns /búsq.  medido
+  n=    1,000  TernarySearch             claves             31.1 ns ± 6.3 ns /búsq.  medido
+  n=    1,000  JumpSearch                claves             35.7 ns ± 1.7 ns /búsq.  medido
+  n=    1,000  InterpolationSearch       claves             16.0 ns ± 6.8 ns /búsq.  medido
+  n=    1,000  ExponentialSearch         claves             24.6 ns ± 4.5 ns /búsq.  medido
+  n=    1,000  InterpolationSearchIntDiv claves             1.8 µs ± 59.2 ns /búsq.  medido
+  n=   10,000  LinearSearch              claves            951.9 ns ± 7.0 ns /búsq.  medido
+  n=   10,000  BinarySearch              claves             33.6 ns ± 6.0 ns /búsq.  medido
+  n=   10,000  TernarySearch             claves            45.4 ns ± 14.3 ns /búsq.  medido
+  n=   10,000  JumpSearch                claves             73.3 ns ± 3.7 ns /búsq.  medido
+  n=   10,000  InterpolationSearch       claves            20.1 ns ± 12.2 ns /búsq.  medido
+  n=   10,000  ExponentialSearch         claves             44.9 ns ± 7.0 ns /búsq.  medido
+  n=   10,000  InterpolationSearchIntDiv claves           17.5 µs ± 119.9 ns /búsq.  medido
+  n=  100,000  LinearSearch              claves             9.3 µs ± 21.0 ns /búsq.  medido
+  n=  100,000  BinarySearch              claves            57.3 ns ± 14.7 ns /búsq.  medido
+  n=  100,000  TernarySearch             claves             37.0 ns ± 6.5 ns /búsq.  medido
+  n=  100,000  JumpSearch                claves            168.3 ns ± 4.0 ns /búsq.  medido
+  n=  100,000  InterpolationSearch       claves             26.2 ns ± 4.7 ns /búsq.  medido
+  n=  100,000  ExponentialSearch         claves            74.4 ns ± 18.6 ns /búsq.  medido
+  n=  100,000  InterpolationSearchIntDiv claves            181.4 µs ± 6.2 µs /búsq.  medido
+  n=1,000,000  LinearSearch              claves             96.3 µs ± 3.2 µs /búsq.  medido
+  n=1,000,000  BinarySearch              claves            77.1 ns ± 32.6 ns /búsq.  medido
+  n=1,000,000  TernarySearch             claves            84.4 ns ± 19.0 ns /búsq.  medido
+  n=1,000,000  JumpSearch                claves            443.0 ns ± 3.6 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       claves             31.3 ns ± 7.5 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         claves           105.1 ns ± 12.4 ns /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv claves            1.75 ms ± 18.5 µs /búsq.  medido
+  n=1,000,000  LinearSearch              inicio              2.7 ns ± 0.1 ns /búsq.  medido
+  n=1,000,000  LinearSearch              centro           50.7 µs ± 120.0 ns /búsq.  medido
+  n=1,000,000  LinearSearch              centro_alto      50.9 µs ± 336.2 ns /búsq.  medido
+  n=1,000,000  LinearSearch              final           102.2 µs ± 169.0 ns /búsq.  medido
+  n=1,000,000  BinarySearch              inicio             21.4 ns ± 2.0 ns /búsq.  medido
+  n=1,000,000  BinarySearch              centro              2.7 ns ± 0.1 ns /búsq.  medido
+  n=1,000,000  BinarySearch              centro_alto        22.5 ns ± 1.6 ns /búsq.  medido
+  n=1,000,000  BinarySearch              final              23.4 ns ± 2.2 ns /búsq.  medido
+  n=1,000,000  TernarySearch             inicio             24.9 ns ± 0.1 ns /búsq.  medido
+  n=1,000,000  TernarySearch             centro             24.7 ns ± 1.3 ns /búsq.  medido
+  n=1,000,000  TernarySearch             centro_alto        24.3 ns ± 0.1 ns /búsq.  medido
+  n=1,000,000  TernarySearch             final              24.6 ns ± 2.3 ns /búsq.  medido
+  n=1,000,000  JumpSearch                inicio              3.1 ns ± 0.0 ns /búsq.  medido
+  n=1,000,000  JumpSearch                centro           554.0 ns ± 54.9 ns /búsq.  medido
+  n=1,000,000  JumpSearch                centro_alto      264.6 ns ± 22.2 ns /búsq.  medido
+  n=1,000,000  JumpSearch                final            841.1 ns ± 42.3 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       inicio              3.2 ns ± 0.1 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       centro              7.2 ns ± 0.1 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       centro_alto        13.8 ns ± 3.3 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       final               3.4 ns ± 0.1 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         inicio             12.9 ns ± 0.2 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         centro             32.3 ns ± 3.6 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         centro_alto        22.8 ns ± 3.0 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         final              33.1 ns ± 6.0 ns /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv inicio              3.0 ns ± 0.2 ns /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv centro             1.72 ms ± 7.8 µs /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv centro_alto       1.75 ms ± 37.9 µs /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv final             3.48 ms ± 27.1 µs /búsq.  medido
+Listo.
+== 5. Benchmark Python (interpretado) ==
+[Python] 3.9.6 | reps=5 | límite=300 s | resolución del reloj ≈ 41 ns | salida: /Users/santiagopolaniapinzon/Downloads/taller3/results/busqueda_python.csv
+  n=    1,000  LinearSearch              claves           11.9 µs ± 281.5 ns /búsq.  medido
+  n=    1,000  BinarySearch              claves           774.4 ns ± 13.5 ns /búsq.  medido
+  n=    1,000  TernarySearch             claves           823.2 ns ± 16.0 ns /búsq.  medido
+  n=    1,000  JumpSearch                claves            1.4 µs ± 114.0 ns /búsq.  medido
+  n=    1,000  InterpolationSearch       claves           691.6 ns ± 24.7 ns /búsq.  medido
+  n=    1,000  ExponentialSearch         claves           906.2 ns ± 30.3 ns /búsq.  medido
+  n=    1,000  InterpolationSearchIntDiv claves             71.8 µs ± 1.6 µs /búsq.  medido
+  n=   10,000  LinearSearch              claves            129.1 µs ± 5.6 µs /búsq.  medido
+  n=   10,000  BinarySearch              claves             1.1 µs ± 43.4 ns /búsq.  medido
+  n=   10,000  TernarySearch             claves             1.2 µs ± 19.5 ns /búsq.  medido
+  n=   10,000  JumpSearch                claves            4.3 µs ± 150.2 ns /búsq.  medido
+  n=   10,000  InterpolationSearch       claves           824.0 ns ± 31.2 ns /búsq.  medido
+  n=   10,000  ExponentialSearch         claves             1.4 µs ± 83.5 ns /búsq.  medido
+  n=   10,000  InterpolationSearchIntDiv claves            703.4 µs ± 8.1 µs /búsq.  medido
+  n=  100,000  LinearSearch              claves            1.25 ms ± 26.9 µs /búsq.  medido
+  n=  100,000  BinarySearch              claves            1.4 µs ± 107.6 ns /búsq.  medido
+  n=  100,000  TernarySearch             claves            1.6 µs ± 153.1 ns /búsq.  medido
+  n=  100,000  JumpSearch                claves           12.9 µs ± 471.3 ns /búsq.  medido
+  n=  100,000  InterpolationSearch       claves           881.9 ns ± 50.3 ns /búsq.  medido
+  n=  100,000  ExponentialSearch         claves            1.8 µs ± 114.9 ns /búsq.  medido
+  n=  100,000  InterpolationSearchIntDiv claves           7.17 ms ± 166.1 µs /búsq.  medido
+  n=1,000,000  LinearSearch              claves          12.86 ms ± 215.9 µs /búsq.  medido
+  n=1,000,000  BinarySearch              claves            1.8 µs ± 198.9 ns /búsq.  medido
+  n=1,000,000  TernarySearch             claves            1.9 µs ± 224.2 ns /búsq.  medido
+  n=1,000,000  JumpSearch                claves           39.9 µs ± 770.8 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       claves             1.0 µs ± 74.2 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         claves            2.2 µs ± 308.0 ns /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv claves           74.81 ms ± 2.04 ms /búsq.  medido
+  n=1,000,000  LinearSearch              inicio            138.8 ns ± 5.4 ns /búsq.  medido
+  n=1,000,000  LinearSearch              centro           8.88 ms ± 270.7 µs /búsq.  medido
+  n=1,000,000  LinearSearch              centro_alto       8.66 ms ± 43.0 µs /búsq.  medido
+  n=1,000,000  LinearSearch              final           17.19 ms ± 549.2 µs /búsq.  medido
+  n=1,000,000  BinarySearch              inicio             1.3 µs ± 35.5 ns /búsq.  medido
+  n=1,000,000  BinarySearch              centro            136.4 ns ± 3.8 ns /búsq.  medido
+  n=1,000,000  BinarySearch              centro_alto        1.5 µs ± 80.7 ns /búsq.  medido
+  n=1,000,000  BinarySearch              final              1.4 µs ± 71.7 ns /búsq.  medido
+  n=1,000,000  TernarySearch             inicio             1.5 µs ± 99.6 ns /búsq.  medido
+  n=1,000,000  TernarySearch             centro             1.7 µs ± 30.0 ns /búsq.  medido
+  n=1,000,000  TernarySearch             centro_alto       1.7 µs ± 102.0 ns /búsq.  medido
+  n=1,000,000  TernarySearch             final              1.7 µs ± 50.8 ns /búsq.  medido
+  n=1,000,000  JumpSearch                inicio            147.6 ns ± 2.3 ns /búsq.  medido
+  n=1,000,000  JumpSearch                centro           56.3 µs ± 828.5 ns /búsq.  medido
+  n=1,000,000  JumpSearch                centro_alto      24.0 µs ± 511.4 ns /búsq.  medido
+  n=1,000,000  JumpSearch                final              80.2 µs ± 1.3 µs /búsq.  medido
+  n=1,000,000  InterpolationSearch       inicio            242.8 ns ± 9.4 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       centro           665.2 ns ± 15.2 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       centro_alto        1.1 µs ± 30.2 ns /búsq.  medido
+  n=1,000,000  InterpolationSearch       final            251.1 ns ± 12.2 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         inicio             70.0 ns ± 2.2 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         centro             1.9 µs ± 37.3 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         centro_alto        1.6 µs ± 71.4 ns /búsq.  medido
+  n=1,000,000  ExponentialSearch         final              2.0 µs ± 49.3 ns /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv inicio            187.8 ns ± 4.9 ns /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv centro           73.95 ms ± 1.47 ms /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv centro_alto      76.86 ms ± 1.75 ms /búsq.  medido
+  n=1,000,000  InterpolationSearchIntDiv final           149.37 ms ± 2.60 ms /búsq.  medido
+Listo.
+== 6. Equivalencia Java <-> Python, gráficas y tablas ==
+Equivalencia Java <-> Python (spec 8.3): OK
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_crecimiento_java.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_crecimiento_python.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_java_vs_python_n1000000.png
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_posicion_java.csv
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_posicion_java.md
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_posicion_python.csv
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_posicion_python.md
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_razones_crecimiento.csv
+  /Users/santiagopolaniapinzon/Downloads/taller3/figures/p2_resumen.csv
