@@ -8,7 +8,7 @@ __pycache__/
 
 # corridas de prueba rápidas (no van al informe)
 results/prueba_*.csv
-ClAUDE.md
+CLAUDE.md
 .claude
 estudio/*
 docs/
