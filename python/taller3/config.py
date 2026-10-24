@@ -39,3 +39,16 @@ NUM_PRESENT_KEYS = 500               # las otras 500 son ausentes
 POSITION_N = 1_000_000
 POSITION_VARIANTS = ("inicio", "centro", "centro_alto", "final")
 SEARCH_VARIANTS = ("claves",) + POSITION_VARIANTS
+
+# --- Punto 3 (análisis comparativo, experimento de supuestos) -----------------
+# Datos: data/p3/, generados UNA vez por generate_data.py (spec p3 6.1).
+# `uniforme` no tiene archivo nuevo: es data/aleatoria_{n}.txt del Punto 1.
+SUPUESTOS_SEED = 20261017            # independiente de SEED y de SEARCH_KEYS_SEED
+SUPUESTOS_SUBDIR = "p3"
+SUPUESTOS_SIZES = (10_000, 100_000)                  # Bucket Sort
+DIGITOS16_SIZES = (10_000, 100_000, 1_000_000)       # Radix Sort, solo Python
+BUCKET_DISTRIBUTIONS = ("uniforme", "rango_pequeno", "concentrado_extremos")
+RADIX_DISTRIBUTIONS = ("uniforme", "digitos16")
+RANGO_PEQUENO = (10_000_000, 10_000_999)             # 1.000 valores posibles
+CONCENTRADO_CUBETAS = 10                             # el cúmulo cae en exactamente 10 cubetas
+DIGITOS16_RANGE = (10**15, 10**16 - 1)

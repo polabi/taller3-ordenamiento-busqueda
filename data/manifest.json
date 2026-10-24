@@ -104,6 +104,97 @@
       "orden": "presentes + ausentes, luego rng.shuffle",
       "python": "3.9.6",
       "creado_utc": "2026-10-23T04:07:10+00:00"
+    },
+    "p3/rango_pequeno_10000.txt": {
+      "n": 10000,
+      "variante": "supuestos",
+      "distribucion": "rango_pequeno",
+      "sha256": "003a0b993de857ec96c4905b93e6e57bc1c24fd0ea711ce506fc1a3a163fcc76",
+      "semilla": 20261017,
+      "parametros": "randint(10000000, 10000999)",
+      "min": 10000000,
+      "max": 10000999,
+      "valores_distintos": 1000,
+      "python": "3.9.6",
+      "creado_utc": "2026-10-24T04:20:41+00:00"
+    },
+    "p3/concentrado_extremos_10000.txt": {
+      "n": 10000,
+      "variante": "supuestos",
+      "distribucion": "concentrado_extremos",
+      "sha256": "98faca8f71baf19fd0a9c38e92dd4bfa69b37f8c2cd2fb6c221a6dc074035fce",
+      "semilla": 20261017,
+      "parametros": "n-2 randint(55000000, 55089999) + 10000000 + 99999999, rng.shuffle",
+      "min": 10000000,
+      "max": 99999999,
+      "valores_distintos": 9443,
+      "python": "3.9.6",
+      "creado_utc": "2026-10-24T04:20:41+00:00"
+    },
+    "p3/rango_pequeno_100000.txt": {
+      "n": 100000,
+      "variante": "supuestos",
+      "distribucion": "rango_pequeno",
+      "sha256": "769ed52b6fa6c50f04e40cbc33587aea8f53ca1331162a9549a7620b1c5db22a",
+      "semilla": 20261017,
+      "parametros": "randint(10000000, 10000999)",
+      "min": 10000000,
+      "max": 10000999,
+      "valores_distintos": 1000,
+      "python": "3.9.6",
+      "creado_utc": "2026-10-24T04:20:41+00:00"
+    },
+    "p3/concentrado_extremos_100000.txt": {
+      "n": 100000,
+      "variante": "supuestos",
+      "distribucion": "concentrado_extremos",
+      "sha256": "6c229b3698df7ac7e1e7acf9fd2f7498692228070d1a311b2ca7e1f3cd77faa9",
+      "semilla": 20261017,
+      "parametros": "n-2 randint(55000000, 55008999) + 10000000 + 99999999, rng.shuffle",
+      "min": 10000000,
+      "max": 99999999,
+      "valores_distintos": 9002,
+      "python": "3.9.6",
+      "creado_utc": "2026-10-24T04:20:41+00:00"
+    },
+    "p3/digitos16_10000.txt": {
+      "n": 10000,
+      "variante": "supuestos",
+      "distribucion": "digitos16",
+      "sha256": "e3070fb38fcd24158fc39f3df21321553c82798cfb88bd17dae04236691dc49b",
+      "semilla": 20261017,
+      "parametros": "randint(10**15, 10**16-1); prefijo de la secuencia de 1000000",
+      "min": 1000155328241689,
+      "max": 9999529235286674,
+      "valores_distintos": 10000,
+      "python": "3.9.6",
+      "creado_utc": "2026-10-24T04:20:41+00:00"
+    },
+    "p3/digitos16_100000.txt": {
+      "n": 100000,
+      "variante": "supuestos",
+      "distribucion": "digitos16",
+      "sha256": "498749d81d819d233cfc59f743333278ea46470f79a0f870bb2179cba365e510",
+      "semilla": 20261017,
+      "parametros": "randint(10**15, 10**16-1); prefijo de la secuencia de 1000000",
+      "min": 1000030654373518,
+      "max": 9999960352334845,
+      "valores_distintos": 100000,
+      "python": "3.9.6",
+      "creado_utc": "2026-10-24T04:20:41+00:00"
+    },
+    "p3/digitos16_1000000.txt": {
+      "n": 1000000,
+      "variante": "supuestos",
+      "distribucion": "digitos16",
+      "sha256": "211b340833ed98ddb22c5e786a746d08313bff08fa3d571a016b8f0e8cae1317",
+      "semilla": 20261017,
+      "parametros": "randint(10**15, 10**16-1); prefijo de la secuencia de 1000000",
+      "min": 1000005417451910,
+      "max": 9999994015984721,
+      "valores_distintos": 1000000,
+      "python": "3.9.6",
+      "creado_utc": "2026-10-24T04:20:41+00:00"
     }
   }
 }

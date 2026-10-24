@@ -26,6 +26,11 @@ Punto 2 (spec p2 6.1): data/claves_busqueda.txt, 1.000 claves (500 presentes, 50
 ausentes) con su propia semilla (config.SEARCH_KEYS_SEED). Se generan solo si el archivo
 no existe; si existe, solo se comprueba su SHA-256. El manifiesto se ACTUALIZA (se agrega
 una entrada), nunca se reescribe: las entradas del Punto 1 quedan byte a byte iguales.
+
+Punto 3 (spec p3 6.1): 7 archivos en data/p3/ para el experimento de supuestos
+(rango_pequeno y concentrado_extremos con n = 10^4 y 10^5; digitos16 con n = 10^4, 10^5 y
+10^6) con su propia semilla (config.SUPUESTOS_SEED). Si falta alguno se generan los 7; si
+existen, solo se comprueban sus SHA-256. Se agregan 7 entradas "p3/<archivo>" al manifiesto.
 """
 from __future__ import annotations
 
@@ -38,7 +43,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from taller3 import config
-from taller3.common.dataio import dataset_path, read_ints, search_keys_path, sha256_of, write_ints
+from taller3.common.dataio import (dataset_path, read_ints, search_keys_path, sha256_of,
+                                   supuestos_path, write_ints)
 
 
 def generate_values(seed: int, count: int) -> list[int]:
@@ -129,6 +135,92 @@ def check_search_keys(data_dir: Path = config.DATA_DIR) -> None:
                          f"({entry['sha256']}); no lo edites a mano")
 
 
+def supuestos_files() -> list[tuple[str, int]]:
+    """Los 7 (distribución, n) de data/p3/, en el orden en que los escribe 6.1.3."""
+    files = []
+    for n in config.SUPUESTOS_SIZES:
+        files += [("rango_pequeno", n), ("concentrado_extremos", n)]
+    files += [("digitos16", n) for n in config.DIGITOS16_SIZES]
+    return files
+
+
+def generate_supuestos_data(data_dir: Path = config.DATA_DIR) -> None:
+    """Genera los 7 archivos de data_dir/p3/ (spec p3 6.1.3) y agrega sus entradas al manifiesto.
+
+    El ORDEN de las llamadas al RNG es parte de la especificación: por cada n de
+    SUPUESTOS_SIZES, rango_pequeno (n randint) y luego concentrado_extremos (n-2 randint +
+    shuffle); al final la secuencia de digitos16 (10^6 randint) cuyos prefijos son cada n.
+    """
+    manifest = _load_manifest(data_dir)
+    rng = random.Random(config.SUPUESTOS_SEED)
+    params: dict[tuple[str, int], str] = {}
+    values: dict[tuple[str, int], list[int]] = {}
+    lo_r, hi_r = config.RANGO_PEQUENO
+    for n in config.SUPUESTOS_SIZES:
+        vals = [rng.randint(lo_r, hi_r) for _ in range(n)]
+        values[("rango_pequeno", n)] = vals
+        params[("rango_pequeno", n)] = f"randint({lo_r}, {hi_r})"
+
+        total = config.MAX_VALUE - config.MIN_VALUE + 1               # 90.000.000
+        assert total % n == 0
+        w = total // n                                                 # ancho de una cubeta
+        lo = config.MIN_VALUE + (n // 2) * w
+        hi = lo + config.CONCENTRADO_CUBETAS * w - 1
+        vals = [rng.randint(lo, hi) for _ in range(n - 2)] + [config.MIN_VALUE, config.MAX_VALUE]
+        rng.shuffle(vals)
+        values[("concentrado_extremos", n)] = vals
+        params[("concentrado_extremos", n)] = (f"n-2 randint({lo}, {hi}) + {config.MIN_VALUE} + "
+                                               f"{config.MAX_VALUE}, rng.shuffle")
+
+    n_big = max(config.DIGITOS16_SIZES)
+    lo_d, hi_d = config.DIGITOS16_RANGE
+    big = [rng.randint(lo_d, hi_d) for _ in range(n_big)]
+    for n in config.DIGITOS16_SIZES:
+        values[("digitos16", n)] = big[:n]
+        params[("digitos16", n)] = f"randint(10**15, 10**16-1); prefijo de la secuencia de {n_big}"
+
+    created = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    for dist, n in supuestos_files():
+        vals = values[(dist, n)]
+        path = supuestos_path(dist, n, data_dir)
+        write_ints(path, vals)
+        mn = mx = vals[0]
+        for v in vals:
+            if v < mn:
+                mn = v
+            if v > mx:
+                mx = v
+        manifest["archivos"][path.relative_to(data_dir).as_posix()] = {
+            "n": n,
+            "variante": "supuestos",
+            "distribucion": dist,
+            "sha256": sha256_of(path),
+            "semilla": config.SUPUESTOS_SEED,
+            "parametros": params[(dist, n)],
+            "min": mn,
+            "max": mx,
+            "valores_distintos": len(set(vals)),
+            "python": sys.version.split()[0],
+            "creado_utc": created,
+        }
+    _save_manifest(data_dir, manifest)
+
+
+def check_supuestos_data(data_dir: Path = config.DATA_DIR) -> None:
+    """ValueError si algún archivo de data/p3/ no tiene entrada o su SHA-256 no coincide."""
+    archivos = _load_manifest(data_dir)["archivos"]
+    for dist, n in supuestos_files():
+        path = supuestos_path(dist, n, data_dir)
+        key = path.relative_to(data_dir).as_posix()
+        entry = archivos.get(key)
+        if entry is None:
+            raise ValueError(f"{key} existe pero no tiene entrada en {MANIFEST_NAME}")
+        actual = sha256_of(path)
+        if actual != entry["sha256"]:
+            raise ValueError(f"{key}: SHA-256 {actual} no coincide con el manifiesto "
+                             f"({entry['sha256']}); no lo edites a mano")
+
+
 def generate_point1_data() -> None:
     """Datos del Punto 1 (sin cambios de comportamiento): reescribe data/ y el manifiesto."""
     max_n = max(config.SIZES)
@@ -199,6 +291,18 @@ def main() -> int:
     else:
         check_search_keys()
         print(f"Las claves ya existen y su SHA-256 coincide con el manifiesto: {keys_path}")
+
+    # 3. Datos del Punto 3: si falta alguno de los 7 (o con --force) se generan los 7.
+    p3_paths = [supuestos_path(d, n) for d, n in supuestos_files()]
+    if args.force or not all(p.exists() for p in p3_paths):
+        generate_supuestos_data()
+        print(f"Datos del Punto 3 escritos en {config.DATA_DIR / config.SUPUESTOS_SUBDIR}:")
+        for p in p3_paths:
+            print(f"  {p.name}  SHA-256 {sha256_of(p)}")
+    else:
+        check_supuestos_data()
+        print(f"Los datos del Punto 3 ya existen y sus SHA-256 coinciden con el manifiesto: "
+              f"{config.DATA_DIR / config.SUPUESTOS_SUBDIR}")
     return 0
 
 

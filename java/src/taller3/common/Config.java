@@ -49,4 +49,9 @@ public final class Config {
     public static final int POSITION_N = 1_000_000;
     public static final String[] POSITION_VARIANTS = {"inicio", "centro", "centro_alto", "final"};
     public static final String[] SEARCH_VARIANTS = {"claves", "inicio", "centro", "centro_alto", "final"};
+
+    // --- Punto 3 (experimento de supuestos). Solo lo que usa Java: no genera datos ni mide Radix.
+    public static final String SUPUESTOS_SUBDIR = "p3";
+    public static final int[] SUPUESTOS_SIZES = {10_000, 100_000};
+    public static final String[] BUCKET_DISTRIBUTIONS = {"uniforme", "rango_pequeno", "concentrado_extremos"};
 }

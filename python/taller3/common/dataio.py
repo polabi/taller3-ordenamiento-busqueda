@@ -67,6 +67,28 @@ def load_search_keys(data_dir: Path = config.DATA_DIR) -> list[int]:
     return keys
 
 
+def supuestos_path(distribucion: str, n: int, data_dir: Path = config.DATA_DIR) -> Path:
+    """Ruta del archivo del experimento de supuestos del Punto 3 (spec p3 6.1.5).
+
+    `uniforme` es la entrada aleatoria del Punto 1 (data/aleatoria_{n}.txt); las demás
+    distribuciones están en data/p3/{distribucion}_{n}.txt.
+    """
+    if distribucion == "uniforme":
+        return data_dir / f"aleatoria_{n}.txt"
+    if distribucion in ("rango_pequeno", "concentrado_extremos", "digitos16"):
+        return data_dir / config.SUPUESTOS_SUBDIR / f"{distribucion}_{n}.txt"
+    raise ValueError(f"Distribución desconocida: {distribucion!r}")
+
+
+def load_supuestos(distribucion: str, n: int, data_dir: Path = config.DATA_DIR) -> list[int]:
+    """Lee n enteros; valida el rango de 8 dígitos salvo en digitos16 (16 dígitos a propósito).
+
+    No comprueba el SHA-256 (eso lo hacen el generador y las pruebas).
+    """
+    return read_ints(supuestos_path(distribucion, n, data_dir), n,
+                     check_range=(distribucion != "digitos16"))
+
+
 def sha256_of(path: Path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:

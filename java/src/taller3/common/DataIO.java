@@ -57,4 +57,28 @@ public final class DataIO {
         }
         return keys;
     }
+
+    /**
+     * Ruta de un archivo del experimento de supuestos del Punto 3 (spec p3 6.1.5):
+     * uniforme -> data/aleatoria_{n}.txt (Punto 1); rango_pequeno y concentrado_extremos
+     * -> data/p3/{distribucion}_{n}.txt. digitos16 no cabe en int (solo Python, spec 4.4.2).
+     */
+    public static Path supuestosPath(Path dataDir, String distribucion, int n) {
+        switch (distribucion) {
+            case "uniforme":
+                return dataDir.resolve("aleatoria_" + n + ".txt");
+            case "rango_pequeno":
+            case "concentrado_extremos":
+                return dataDir.resolve(Config.SUPUESTOS_SUBDIR).resolve(distribucion + "_" + n + ".txt");
+            case "digitos16":
+                throw new IllegalArgumentException("digitos16 no cabe en int; solo Python, ver spec P3 4.4.2");
+            default:
+                throw new IllegalArgumentException("Distribución desconocida: " + distribucion);
+        }
+    }
+
+    /** Lee n enteros de supuestosPath (valida cantidad y rango de 8 dígitos con readInts). */
+    public static int[] readSupuestos(Path dataDir, String distribucion, int n) throws IOException {
+        return readInts(supuestosPath(dataDir, distribucion, n), n);
+    }
 }
