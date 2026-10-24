@@ -168,6 +168,9 @@ class TestGeneracionClaves(unittest.TestCase):
         # (La entrada no añade campos raíz derivados: solo vive en archivos[...].)
         tmp_manifest = json.loads((cls.tmp / "manifest.json").read_text(encoding="utf-8"))
         cls.real_keys_entry = tmp_manifest["archivos"].pop("claves_busqueda.txt", None)
+        # Las entradas "p3/..." del Punto 3 (spec p3 6.1.4) tampoco son parte del punto de partida.
+        for name in [k for k in tmp_manifest["archivos"] if k.startswith("p3/")]:
+            del tmp_manifest["archivos"][name]
         (cls.tmp / "manifest.json").write_text(
             json.dumps(tmp_manifest, indent=2, ensure_ascii=False), encoding="utf-8")
         cls.manifest_before = json.loads((cls.tmp / "manifest.json").read_text(encoding="utf-8"))
